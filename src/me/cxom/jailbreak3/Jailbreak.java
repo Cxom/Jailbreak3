@@ -4,10 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import me.cxom.jailbreak3.events.CancelledEvents;
+import me.cxom.jailbreak3.events.CommandEvents;
 
 public class Jailbreak extends JavaPlugin{
 	
@@ -21,6 +25,8 @@ public class Jailbreak extends JavaPlugin{
 	@Override
 	public void onEnable(){
 		plugin = this;
+		Bukkit.getServer().getPluginManager().registerEvents(new CancelledEvents(), getPlugin());
+		Bukkit.getServer().getPluginManager().registerEvents(new CommandEvents(), getPlugin());
 		//register events
 	}
 	
