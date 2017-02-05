@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.cxom.jailbreak3.arena.config.ArenaManager;
 import me.cxom.jailbreak3.events.CancelledEvents;
 import me.cxom.jailbreak3.events.CommandEvents;
 
@@ -28,12 +29,13 @@ public class Jailbreak extends JavaPlugin{
 		Bukkit.getServer().getPluginManager().registerEvents(new CancelledEvents(), getPlugin());
 		Bukkit.getServer().getPluginManager().registerEvents(new CommandEvents(), getPlugin());
 		//register events
+		ArenaManager.loadArenas();
 	}
 	
 	@Override
 	public void onDisable(){
 		//restore inventories, locations
-	} 
+	}
 	
 	public static boolean isPlayer(Player player){ return isPlayer(player.getUniqueId()); }
 	public static boolean isPlayer(UUID uuid){
@@ -45,5 +47,6 @@ public class Jailbreak extends JavaPlugin{
 		return players.get(uuid);
 	}
 	
+	//player joining and leaving
 	
 }
