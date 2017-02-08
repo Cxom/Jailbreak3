@@ -3,6 +3,7 @@ package me.cxom.jailbreak3.arena.config;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +22,10 @@ public class ArenaManager {
 	private static Map<String, FileConfiguration> arenaConfigs = new HashMap<>();
 	
 	private static Map<String, JailbreakArena> arenas = new HashMap<>();
+	
+	public static Collection<JailbreakArena> getArenas(){
+		return arenas.values();
+	}
 	
 	public static boolean isArena(String arenaName){
 		return arenas.containsKey(arenas) || loadArenaConfig(arenaName) != null;
@@ -59,8 +64,8 @@ public class ArenaManager {
 				FileConfiguration arena = new YamlConfiguration();
 				try {
 					arena.load(arenaf);
-					arenaConfigs.put(arena.getName(), arena);
-					arenas.put(arena.getName(), ArenaLoader.load(arena));
+					arenaConfigs.put(arenaf.getName(), arena);
+					arenas.put(arenaf.getName(), ArenaLoader.load(arena));
 				} catch (IOException | InvalidConfigurationException e) {
 					Bukkit.getLogger().warning("Could not load " + arenaf.getName() + "!");
 					e.printStackTrace();
@@ -101,11 +106,11 @@ public class ArenaManager {
 	}
 	
 	public static void saveAll(){
-		for(FileConfiguration arena : arenaConfigs.values()){
+		for(Map.Entry<String, FileConfiguration> arenaEntry : arenaConfigs.entrySet()){
 			File arenaf = new File(Jailbreak.getPlugin().getDataFolder().getAbsolutePath()
-					+ File.separator + "Arenas" + File.separator + arena.getName() + ".yml");
+					+ File.separator + "Arenas" + File.separator + arenaEntry.getKey() + ".yml");
 			try {
-				arena.save(arenaf);
+				arenaEntry.getValue().save(arenaf);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
