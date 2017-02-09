@@ -46,7 +46,10 @@ public class ArenaManager {
 		FileConfiguration arena = getArenaConfig(arenaName);
 		arena.set(path, value);
 		arenaConfigs.put(arenaName, arena);
-		arenas.put(arenaName, ArenaLoader.load(arena));
+		JailbreakArena loaded = ArenaLoader.load(arena);
+		if (loaded != null){
+			arenas.put(arenaName, loaded);
+		}
 	}
 	
 	public static void loadArenas(){
@@ -65,7 +68,10 @@ public class ArenaManager {
 				try {
 					arena.load(arenaf);
 					arenaConfigs.put(arenaf.getName(), arena);
-					arenas.put(arenaf.getName(), ArenaLoader.load(arena));
+					JailbreakArena loaded = ArenaLoader.load(arena);
+					if (loaded != null){
+						arenas.put(arenaf.getName(), loaded);
+					}
 				} catch (IOException | InvalidConfigurationException e) {
 					Bukkit.getLogger().warning("Could not load " + arenaf.getName() + "!");
 					e.printStackTrace();
@@ -83,7 +89,10 @@ public class ArenaManager {
 			try {
 				arena.load(arenaf);
 				arenaConfigs.put(arenaName, arena);
-				arenas.put(arenaName, ArenaLoader.load(arena));
+				JailbreakArena loaded = ArenaLoader.load(arena);
+				if (loaded != null){
+					arenas.put(arenaf.getName(), loaded);
+				}
 				return arena;
 			} catch (IOException | InvalidConfigurationException e) {
 				Bukkit.getLogger().warning("Could not load " + arenaf.getName() + "!");
