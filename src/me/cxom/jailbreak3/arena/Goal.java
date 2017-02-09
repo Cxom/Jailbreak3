@@ -1,33 +1,29 @@
 package me.cxom.jailbreak3.arena;
 
-import java.util.function.Consumer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import me.cxom.jailbreak3.Jailbreak;
-import me.cxom.jailbreak3.JailbreakPlayer;
+import me.cxom.jailbreak3.player.JailbreakPlayer;
 
 public class Goal implements Listener{
 
-	private final Location goal;
+	private final Location location;
 	private final double radius;
-	private final Consumer<JailbreakPlayer> toggleOn;
-	private final Consumer<JailbreakPlayer> toggleOff;
 	
-	public Goal(Location goal, double radius, Consumer<JailbreakPlayer> toggleOn, Consumer<JailbreakPlayer> toggleOff){
-		this.goal = goal;
+	public Goal(Location goal, double radius){
+		this.location = goal;
 		this.radius = radius;
-		this.toggleOn = toggleOn;
-		this.toggleOff = toggleOff;
 		Bukkit.getServer().getPluginManager().registerEvents(this, Jailbreak.getPlugin());
 	}
 	
 	public Location getLocation(){
-		return goal;
+		return location;
 	}
 	
 	public double getRadius(){
@@ -35,10 +31,59 @@ public class Goal implements Listener{
 	}
 	
 	public boolean isOnGoal(Location loc){
-		if (distance(goal, loc) <= radius){
+		if (distance(location, loc) <= radius){
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	@Override
+	public boolean equals(Object o){
+		if (! (o instanceof Goal)) return false;
+		Goal g = (Goal) o;
+		return location == g.getLocation() && radius == g.getRadius();
+	}
+	
+	private static class GoalEvent extends Event {
+	    ////
+		private static final HandlerList handlers = new HandlerList();
+		
+		public HandlerList getHandlers() {
+			return handlers;
+		}
+
+		public static HandlerList getHandlerList() {
+			return handlers;
+		}
+		////
+		
+		private Goal goal;
+		private JailbreakPlayer jp;
+
+		public GoalEvent(Goal goal, JailbreakPlayer jp) {
+			this.goal = goal;
+			this.jp = jp;
+		}
+		
+		public Goal getGoal(){
+			return goal;
+		}
+
+		public JailbreakPlayer getJailbreakPlayer() {
+			return jp;
+		}
+	}
+	
+	public static class PlayerOnGoalEvent extends GoalEvent {
+		public PlayerOnGoalEvent(Goal goal, JailbreakPlayer jp) {
+			super(goal, jp);
+		}
+	}
+	
+	public static class PlayerOffGoalEvent extends GoalEvent {
+		public PlayerOffGoalEvent(Goal goal, JailbreakPlayer jp) {
+			super(goal, jp);
 		}
 	}
 	
@@ -52,10 +97,10 @@ public class Goal implements Listener{
 	@EventHandler
 	public void onGoalTrigger(PlayerMoveEvent e){
 		if(Jailbreak.isPlayer(e.getPlayer())){
-			if(toggleOn != null && isOnGoal(e.getTo()) && !isOnGoal(e.getFrom())){
-				toggleOn.accept(Jailbreak.getPlayer(e.getPlayer()));
-			} else if (toggleOff != null && isOnGoal(e.getFrom()) && !isOnGoal(e.getTo())){
-				toggleOff.accept(Jailbreak.getPlayer(e.getPlayer()));
+			if(isOnGoal(e.getTo()) && !isOnGoal(e.getFrom())){
+				Bukkit.getServer().getPluginManager().callEvent(new PlayerOnGoalEvent(this, Jailbreak.getPlayer(e.getPlayer())));
+			} else if (isOnGoal(e.getFrom()) && !isOnGoal(e.getTo())){
+				Bukkit.getServer().getPluginManager().callEvent(new PlayerOffGoalEvent(this, Jailbreak.getPlayer(e.getPlayer())));
 			}
 		}
 	}
