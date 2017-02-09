@@ -1,12 +1,14 @@
 package me.cxom.jailbreak3.game;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,6 +35,77 @@ public class GameInstance implements Listener {
 	
 	private GameState gamestate = GameState.WAITING;
 	
+	private Lobby lobby = new Lobby();
+	
+	public class Lobby {
+		
+		Set<Player> waitingPlayers = new HashSet<>();
+		
+		public void addPlayer(Player player){
+			if (gamestate == GameState.STOPPED){
+				player.sendMessage(Jailbreak.CHAT_PREFIX + ChatColor.RED + "This game has been stopped, you cannot join.");
+				//TODO i18n
+				return;
+			}
+			waitingPlayers.add(player);
+			PlayerProfile.save(player);
+			player.teleport(arena.getPregameLobby());
+			player.setGameMode(GameMode.SURVIVAL);
+			player.setFlying(false);
+			//TODO Hunger, health, saturation, xp
+			player.getInventory().clear();
+			if (gamestate == GameState.WAITING && waitingPlayers.size() >= arena.getPlayersToStart()){
+				startCountdown();
+			}
+		}
+		
+		public void removePlayer(Player player){
+			waitingPlayers.remove(player);
+			PlayerProfile.restore(player);
+		}
+		
+		public void removeAll(){
+			for (Player player : waitingPlayers){
+				PlayerProfile.restore(player);
+			}
+			waitingPlayers.clear();
+		}
+		
+		public Set<Player> getWaitingPlayers(){
+			return waitingPlayers;
+		}
+		
+		public void startCountdown(){
+			new BukkitRunnable(){
+				int i = 10;
+				@Override
+				public void run(){
+					if (i <= 0){
+						this.cancel();
+						startNow();
+						return;
+					}
+					for (Player player : waitingPlayers){
+						player.sendMessage(Jailbreak.CHAT_PREFIX + ChatColor.GOLD + "Match starting in " + i + " second(s) on " + arena.getName() + "!");
+					}
+					i--;
+				}
+			}.runTaskTimerAsynchronously(Jailbreak.getPlugin(), 20, 20);
+		}
+		
+		public void startNow(){
+			if (gamestate != GameState.WAITING || waitingPlayers.size() < arena.getPlayersToStart()){
+				for (Player player : waitingPlayers){
+					player.sendMessage(Jailbreak.CHAT_PREFIX + ChatColor.RED + "Not enough players, start aborted!");
+				}
+			} else {
+				start(waitingPlayers);
+				waitingPlayers.clear();
+			}
+		}
+		
+	}
+	
 	private final BukkitRunnable free = new BukkitRunnable(){
 		@Override
 		public void run(){
@@ -51,6 +124,10 @@ public class GameInstance implements Listener {
 	
 	public GameState getGameState(){
 		return gamestate;
+	}
+	
+	public Lobby getLobby(){
+		return lobby;
 	}
 	
 	private void start(Set<Player> players){
@@ -209,11 +286,15 @@ public class GameInstance implements Listener {
 			}
 			Jailbreak.removePlayer(player);
 			PlayerProfile.restore(player);
+		} else {
+			lobby.removePlayer(e.getPlayer());
+			// for performance reasons, does checking if a player is in the lobby even matter?
 		}
 	}
 	
 	public void forceStop(){
 		end();
+		lobby.removeAll();
 		gamestate = GameState.STOPPED;
 	}
 	
