@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import me.cxom.jailbreak3.Jailbreak;
+import me.cxom.jailbreak3.player.PlayerProfile;
 
 public class CommandEvents implements Listener{
 
@@ -22,7 +23,7 @@ public class CommandEvents implements Listener{
 	public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent e) {
 		Player player = e.getPlayer();
 		String command = e.getMessage().toLowerCase() + " ";
-		if (Jailbreak.isPlayer(player) && !player.isOp()){
+		if (PlayerProfile.isSaved(player) && !player.isOp()){
 			if (cmds.contains(command.split(" ")[0]) || (command.startsWith("jailbreak leave"))) {
 				return;
 			}else{
