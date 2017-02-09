@@ -16,6 +16,9 @@ public class Goal implements Listener{
 	private final Location location;
 	private final double radius;
 	
+	private int active = 0;
+	private int defended = 0;
+	
 	public Goal(Location goal, double radius){
 		this.location = goal;
 		this.radius = radius;
@@ -28,6 +31,38 @@ public class Goal implements Listener{
 	
 	public double getRadius(){
 		return radius;
+	}
+	
+	public boolean isActive(){
+		return active > 0;
+	}
+	
+	public boolean isDefended(){
+		return defended > 0;
+	}
+	
+	public void addActive(){
+		active++;
+	}
+	
+	public void addDefended(){
+		defended++;
+	}
+	
+	public void removeActive(){
+		active--;
+	}
+	
+	public void removeDefended(){
+		defended--;
+	}
+	
+	public void setActive(int active){
+		this.active = active;
+	}
+	
+	public void setDefended(int defended){
+		this.defended = defended;
 	}
 	
 	public boolean isOnGoal(Location loc){
