@@ -21,6 +21,7 @@ import me.cxom.jailbreak3.arena.JailbreakTeam;
 import me.cxom.jailbreak3.arena.region.Area;
 import me.cxom.jailbreak3.arena.region.MultiRegion;
 import me.cxom.jailbreak3.arena.region.Region;
+import me.cxom.jailbreak3.utils.JailbreakColor;
 
 public class ArenaLoader {
 	
@@ -47,13 +48,13 @@ public class ArenaLoader {
 	
 	public static JailbreakTeam getTeam(ConfigurationSection section){
 		String name = section.getString("name");
-		ChatColor color = ChatColor.valueOf(section.getString("chatcolor"));
+
+		JailbreakColor color = getColor(section.getConfigurationSection("color"));
 		if (name == null && color == null) return null;
 		if (name == null){
-			name = StringUtils.capitalize(color.name());
+			name = StringUtils.capitalize(color.getChatColor().name());
 		} else if (color == null){
-			color = ChatColor.valueOf(name);
-			color = color == null ? ChatColor.WHITE : color;
+			color = JailbreakColor.valueOf(name); //Defaults to white
 		}
 		
 		World world = getRootWorld(section);
@@ -96,6 +97,21 @@ public class ArenaLoader {
 	public static String getName(File arenaFile){
 		String name = arenaFile.getName();
         return name.substring(0, name.length() - 4);
+	}
+	
+	public static JailbreakColor getColor(ConfigurationSection section){
+		Integer red = section.getInt("red", -1);
+		Integer green = section.getInt("green", -1);
+		Integer blue = section.getInt("blue", -1);
+		ChatColor chatColor = ChatColor.valueOf("chatcolor");
+		if (red == null || green == null || blue == null){
+			return null;
+		}
+		if (chatColor == null){
+			return new JailbreakColor(red, green, blue);
+		} else {
+			return new JailbreakColor(red, green, blue, chatColor);
+		}
 	}
 	
 	public static <T> List<T> getList(ConfigurationSection section, Function<ConfigurationSection, T> loader) throws ClassCastException{

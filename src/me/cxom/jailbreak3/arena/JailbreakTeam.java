@@ -15,11 +15,12 @@ import me.cxom.jailbreak3.arena.Goal.PlayerOffGoalEvent;
 import me.cxom.jailbreak3.arena.Goal.PlayerOnGoalEvent;
 import me.cxom.jailbreak3.arena.region.Area;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
+import me.cxom.jailbreak3.utils.JailbreakColor;
 
 public class JailbreakTeam implements Listener {
 
 	private final String name;
-	private final ChatColor chatColor;
+	private final JailbreakColor color;
 	
 	private final List<Location> spawns;
 	private final Goal goal;
@@ -27,10 +28,10 @@ public class JailbreakTeam implements Listener {
 	private final Area jails;
 	private final Door door;
 	
-	public JailbreakTeam(String name, ChatColor cc, 
+	public JailbreakTeam(String name, JailbreakColor color, 
 							List<Location> spawns, Goal goal, List<Location> jailspawns, Area jails, Door door){
 		this.name = name;
-		this.chatColor = cc;
+		this.color = color;
 		
 		this.spawns = spawns;
 		this.goal = goal;
@@ -45,8 +46,12 @@ public class JailbreakTeam implements Listener {
 		return name;
 	}
 	
+	public JailbreakColor getColor(){
+		return color;
+	}
+	
 	public ChatColor getChatColor(){
-		return chatColor;
+		return color.getChatColor();
 	}
 	
 	public List<Location> getSpawns(){
