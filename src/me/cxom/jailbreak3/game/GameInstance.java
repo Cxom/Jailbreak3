@@ -17,9 +17,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.cxom.jailbreak3.Jailbreak;
-import me.cxom.jailbreak3.arena.Goal;
-import me.cxom.jailbreak3.arena.Goal.PlayerOffGoalEvent;
-import me.cxom.jailbreak3.arena.Goal.PlayerOnGoalEvent;
 import me.cxom.jailbreak3.arena.JailbreakArena;
 import me.cxom.jailbreak3.arena.JailbreakTeam;
 import me.cxom.jailbreak3.events.custom.JailbreakDeathEvent;
@@ -119,6 +116,7 @@ public class GameInstance implements Listener {
 		
 		this.arena = arena;
 		for(JailbreakTeam team : arena.getTeams()){
+			team.setPlayerSupplier(() -> {return players;});
 			alive.put(team, 0);
 		}
 		Bukkit.getServer().getPluginManager().registerEvents(this, Jailbreak.getPlugin());
@@ -222,43 +220,6 @@ public class GameInstance implements Listener {
 			team.getGoal().setDefended(0);
 		}
 		gamestate = GameState.WAITING;
-	}
-	
-	@EventHandler
-	public void onWalkOnGoal(PlayerOnGoalEvent e){
-		System.out.println("Goal event: " + arena.getName());
-		if (players.containsKey(e.getJailbreakPlayer())){
-			JailbreakTeam team = players.get(e.getJailbreakPlayer());
-			Goal goal = e.getGoal();
-			if (goal.equals(team.getGoal())){
-				goal.addActive();
-				if (!goal.isDefended()){
-					team.getDoor().open();
-				}
-			} else {
-				goal.addDefended();
-				team.getDoor().close();
-			}
-		}
-	}
-	
-	@EventHandler
-	public void onWalkOffGoal(PlayerOffGoalEvent e){
-		if (players.containsKey(e.getJailbreakPlayer())){
-			JailbreakTeam team = players.get(e.getJailbreakPlayer());
-			Goal goal = e.getGoal();
-			if (e.getGoal().equals(team.getGoal())){
-				goal.removeActive();
-				if (!goal.isActive()){
-					team.getDoor().close();
-				}
-			} else {
-				goal.removeDefended();
-				if (goal.isActive()){
-					team.getDoor().open();
-				}
-			}
-		}		
 	}
 	
 	@EventHandler
