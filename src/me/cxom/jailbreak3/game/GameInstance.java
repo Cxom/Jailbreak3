@@ -22,6 +22,7 @@ import me.cxom.jailbreak3.arena.JailbreakTeam;
 import me.cxom.jailbreak3.events.custom.JailbreakDeathEvent;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
 import me.cxom.jailbreak3.player.PlayerProfile;
+import me.cxom.jailbreak3.utils.InventoryUtils;
 
 public class GameInstance implements Listener {
 
@@ -141,8 +142,9 @@ public class GameInstance implements Listener {
 			this.players.put(jp, team);
 			this.alive.put(team, alive.get(team) + 1);
 			player.teleport(team.getSpawns().get(i % team.getSpawns().size()));
-			i++;
+			InventoryUtils.equipPlayer(player, team.getColor());
 			player.sendMessage(Jailbreak.CHAT_PREFIX + team.getChatColor() + "You are on the " + team.getName() + " Team!");
+			i++;
 			//TODO i18n
 		}
 		free.runTaskTimer(Jailbreak.getPlugin(), 20, 20);
