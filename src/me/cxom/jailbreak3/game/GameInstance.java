@@ -55,6 +55,7 @@ public class GameInstance implements Listener {
 			//TODO Hunger, health, saturation, xp
 			player.getInventory().clear();
 			if (gamestate == GameState.WAITING && waitingPlayers.size() >= arena.getPlayersToStart()){
+				gamestate = GameState.STARTING;
 				startCountdown();
 			}
 		}
@@ -94,10 +95,11 @@ public class GameInstance implements Listener {
 		}
 		
 		public void startNow(){
-			if (gamestate != GameState.WAITING || waitingPlayers.size() < arena.getPlayersToStart()){
+			if (gamestate != GameState.STARTING || waitingPlayers.size() < arena.getPlayersToStart()){
 				for (Player player : waitingPlayers){
 					player.sendMessage(Jailbreak.CHAT_PREFIX + ChatColor.RED + "Not enough players, start aborted!");
 				}
+				gamestate = GameState.WAITING;
 			} else {
 				start(waitingPlayers);
 				waitingPlayers.clear();
@@ -131,7 +133,6 @@ public class GameInstance implements Listener {
 	}
 	
 	private void start(Set<Player> players){
-		gamestate = GameState.STARTING;
 		List<JailbreakTeam> teams = arena.getTeams();
 		int numTeams = teams.size();
 		int i = 0;
