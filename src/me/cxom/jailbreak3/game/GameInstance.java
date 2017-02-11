@@ -17,6 +17,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.trinoxtion.movement.MovementPlusPlus;
+import com.trinoxtion.movement.MovementSystem;
+
 import me.cxom.jailbreak3.Jailbreak;
 import me.cxom.jailbreak3.arena.JailbreakArena;
 import me.cxom.jailbreak3.arena.JailbreakTeam;
@@ -33,6 +36,10 @@ public class GameInstance implements Listener {
 	private Map<JailbreakTeam, Integer> alive = new HashMap<>();
 	
 	private GameState gamestate = GameState.WAITING;
+	
+	private MovementSystem movement = MovementPlusPlus.CXOMS_MOVEMENT;
+	
+	private BukkitTask free;
 	
 	private Lobby lobby = new Lobby();
 	
@@ -111,8 +118,6 @@ public class GameInstance implements Listener {
 		
 	}
 	
-	private BukkitTask free;
-	
 	public GameInstance(JailbreakArena arena){
 		
 		this.arena = arena;
@@ -143,6 +148,7 @@ public class GameInstance implements Listener {
 			this.alive.put(team, alive.get(team) + 1);
 			player.teleport(team.getSpawns().get(i % team.getSpawns().size()));
 			InventoryUtils.equipPlayer(player, team.getColor());
+			movement.addPlayer(player);
 			player.sendMessage(Jailbreak.CHAT_PREFIX + team.getChatColor() + "You are on the " + team.getName() + " Team!");
 			i++;
 			//TODO i18n
@@ -218,6 +224,7 @@ public class GameInstance implements Listener {
 		for(JailbreakPlayer jp : players.keySet()){
 			PlayerProfile.restore(jp.getPlayer());
 			Jailbreak.removePlayer(jp.getPlayer());
+			movement.removePlayer(jp.getPlayer());
 		}
 		players.clear();
 		alive.clear();
