@@ -61,6 +61,7 @@ public class Jailbreak extends JavaPlugin{
 		if (label.equalsIgnoreCase("jailbreak")){
 			if (args.length == 0){
 				if (! (sender instanceof Player)) return true;
+				if (PlayerProfile.isSaved((Player) sender)) return true;
 				((Player) sender).openInventory(JailbreakMenu.getMenu());
 				return true;
 			} else if (args.length >= 2 && args[0].equalsIgnoreCase("join")){
