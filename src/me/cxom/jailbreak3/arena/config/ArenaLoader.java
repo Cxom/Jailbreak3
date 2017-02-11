@@ -103,14 +103,14 @@ public class ArenaLoader {
 		Integer red = section.getInt("red", -1);
 		Integer green = section.getInt("green", -1);
 		Integer blue = section.getInt("blue", -1);
-		ChatColor chatColor = ChatColor.valueOf("chatcolor");
+		String chatcolor = section.getString("chatcolor"); 	
 		if (red == null || green == null || blue == null){
 			return null;
 		}
-		if (chatColor == null){
+		if (chatcolor == null){
 			return new JailbreakColor(red, green, blue);
 		} else {
-			return new JailbreakColor(red, green, blue, chatColor);
+			return new JailbreakColor(red, green, blue, ChatColor.valueOf(chatcolor));
 		}
 	}
 	
