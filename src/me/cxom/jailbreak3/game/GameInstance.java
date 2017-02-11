@@ -17,6 +17,7 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -26,10 +27,10 @@ import com.trinoxtion.movement.MovementSystem;
 
 import me.cxom.jailbreak3.Jailbreak;
 import me.cxom.jailbreak3.arena.Goal;
-import me.cxom.jailbreak3.arena.JailbreakArena;
-import me.cxom.jailbreak3.arena.JailbreakTeam;
 import me.cxom.jailbreak3.arena.Goal.PlayerOffGoalEvent;
 import me.cxom.jailbreak3.arena.Goal.PlayerOnGoalEvent;
+import me.cxom.jailbreak3.arena.JailbreakArena;
+import me.cxom.jailbreak3.arena.JailbreakTeam;
 import me.cxom.jailbreak3.events.custom.JailbreakDeathEvent;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
 import me.cxom.jailbreak3.player.PlayerProfile;
@@ -80,8 +81,9 @@ public class GameInstance implements Listener {
 		}
 		
 		public void removePlayer(Player player){
-			waitingPlayers.remove(player);
-			PlayerProfile.restore(player);
+			if (waitingPlayers.remove(player)){
+				PlayerProfile.restore(player);
+			}
 		}
 		
 		public void removeAll(){
@@ -220,6 +222,27 @@ public class GameInstance implements Listener {
 		player.teleport(jailspawns.get((int) (Math.random() * jailspawns.size())));
 	}
 	
+	public void removePlayer(Player player){
+		if (Jailbreak.isPlayer(player)){ 
+			JailbreakPlayer jp = Jailbreak.getPlayer(player);
+			if (players.containsKey(jp)){
+				JailbreakTeam team = players.get(jp);
+				team.decrementSize();
+				if (jp.isFree()){
+					team.decrementAlive();
+				}
+				gui.removePlayer(player);
+				gui.update();
+				checkForWin(team);
+				players.remove(jp);
+				Jailbreak.removePlayer(player);
+				PlayerProfile.restore(player);
+			}
+		} else {
+			lobby.removePlayer(player);
+		}
+	}
+	
 	private void updateAliveStatuses(){
 		for(Map.Entry<JailbreakPlayer, JailbreakTeam> jpjt : players.entrySet()){
 			JailbreakPlayer jp = jpjt.getKey();
@@ -326,27 +349,15 @@ public class GameInstance implements Listener {
 	}	
 	
 	@EventHandler
-	public void onPlayerQuitServer(PlayerQuitEvent e){
-		Player player = e.getPlayer();
-		if (Jailbreak.isPlayer(player)){ 
-			JailbreakPlayer jp = Jailbreak.getPlayer(player);
-			if (players.containsKey(jp)){
-				JailbreakTeam team = players.get(jp);
-				team.decrementSize();
-				if (jp.isFree()){
-					team.decrementAlive();
-				}
-				gui.removePlayer(player);
-				gui.update();
-				checkForWin(team);
-				players.remove(jp);
-				Jailbreak.removePlayer(player);
-				PlayerProfile.restore(player);
-			}
-		} else {
-			lobby.removePlayer(e.getPlayer());
-			// for performance reasons, does checking if a player is in the lobby even matter?
+	public void onPlayerLeaveGame(PlayerCommandPreprocessEvent e){
+		if (e.getMessage().equalsIgnoreCase("/jailbreak leave")){
+			removePlayer(e.getPlayer());
 		}
+	}
+	
+	@EventHandler
+	public void onPlayerQuitServer(PlayerQuitEvent e){
+		removePlayer(e.getPlayer());
 	}
 	
 	public void forceStop(){
