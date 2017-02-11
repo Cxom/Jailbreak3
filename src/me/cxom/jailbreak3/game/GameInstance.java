@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import me.cxom.jailbreak3.Jailbreak;
 import me.cxom.jailbreak3.arena.JailbreakArena;
@@ -106,12 +107,7 @@ public class GameInstance implements Listener {
 		
 	}
 	
-	private final BukkitRunnable free = new BukkitRunnable(){
-		@Override
-		public void run(){
-			updateAliveStatuses();
-		};
-	};	
+	private BukkitTask free;
 	
 	public GameInstance(JailbreakArena arena){
 		
@@ -147,7 +143,12 @@ public class GameInstance implements Listener {
 			i++;
 			//TODO i18n
 		}
-		free.runTaskTimer(Jailbreak.getPlugin(), 20, 20);
+		free = new BukkitRunnable(){
+			@Override
+			public void run(){
+				updateAliveStatuses();
+			};
+		}.runTaskTimer(Jailbreak.getPlugin(), 20, 20);
 		updateGUI();
 		gamestate = GameState.RUNNING;
 	}
