@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import me.cxom.jailbreak3.Jailbreak;
 
@@ -14,6 +15,7 @@ public class JailbreakDeathEventCaller implements Listener {
 	public void onJailbreakDeath(EntityDamageEvent e){
 		if (! (Jailbreak.isPlayer(e.getEntity().getUniqueId()))) return;
 		Player player = (Player) e.getEntity();
+		if (e.getCause() == DamageCause.FALL) return;
 		if (e.getFinalDamage() < player.getHealth()) return;
 		Bukkit.getServer().getPluginManager().callEvent(new JailbreakDeathEvent(Jailbreak.getPlayer(player), e));
 	}
