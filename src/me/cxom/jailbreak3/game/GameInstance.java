@@ -68,6 +68,7 @@ public class GameInstance implements Listener {
 			player.teleport(arena.getPregameLobby());
 			player.setGameMode(GameMode.SURVIVAL);
 			player.setFlying(false);
+			player.setInvulnerable(true);
 			player.setHealth(20);
 			player.setFoodLevel(20);
 			player.setSaturation(20);
@@ -129,6 +130,10 @@ public class GameInstance implements Listener {
 		
 	}
 	
+	public Lobby getLobby(){
+		return lobby;
+	}
+	
 	///////////////////////////////////////////////////////////////
 	
 	private JailbreakGUI gui = new JailbreakGUI();
@@ -179,10 +184,6 @@ public class GameInstance implements Listener {
 		return gamestate;
 	}
 	
-	public Lobby getLobby(){
-		return lobby;
-	}
-	
 	private void start(Set<Player> players){
 		List<JailbreakTeam> teams = arena.getTeams();
 		int numTeams = teams.size();
@@ -195,6 +196,7 @@ public class GameInstance implements Listener {
 			team.incrementSize();
 			team.incrementAlive();
 			player.teleport(team.getSpawns().get(i % team.getSpawns().size()));
+			player.setInvulnerable(false);
 			gui.addPlayer(player);
 			InventoryUtils.equipPlayer(player, team.getColor());
 			movement.addPlayer(player);
