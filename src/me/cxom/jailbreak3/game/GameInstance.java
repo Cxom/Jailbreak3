@@ -51,7 +51,11 @@ public class GameInstance implements Listener {
 			player.teleport(arena.getPregameLobby());
 			player.setGameMode(GameMode.SURVIVAL);
 			player.setFlying(false);
-			//TODO Hunger, health, saturation, xp
+			player.setHealth(20);
+			player.setFoodLevel(20);
+			player.setSaturation(20);
+			player.setExhaustion(0);
+			player.setFireTicks(0);
 			player.getInventory().clear();
 			if (gamestate == GameState.WAITING && waitingPlayers.size() >= arena.getPlayersToStart()){
 				gamestate = GameState.STARTING;
