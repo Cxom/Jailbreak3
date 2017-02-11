@@ -28,6 +28,9 @@ public class JailbreakTeam implements Listener {
 	private final Area jails;
 	private final Door door;
 	
+	private int members = 0;
+	private int alive = 0;
+	
 	public JailbreakTeam(String name, JailbreakColor color, 
 							List<Location> spawns, Goal goal, List<Location> jailspawns, Area jails, Door door){
 		this.name = name;
@@ -72,6 +75,38 @@ public class JailbreakTeam implements Listener {
 
 	public Door getDoor() {
 		return door;
+	}
+	
+	public int getSize(){
+		return members;
+	}
+	
+	public void setSize(int members){
+		this.members = members;
+	}
+	
+	public void incrementSize(){
+		members++;
+	}
+	
+	public void decrementSize(){
+		members--;
+	}
+	
+	public int getAlive(){
+		return alive;
+	}
+	
+	public void setAlive(int alive){
+		this.alive = alive;
+	}
+	
+	public void incrementAlive(){
+		alive++;
+	}
+	
+	public void decrementAlive(){
+		alive--;
 	}
 	
 	@Override

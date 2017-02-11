@@ -33,13 +33,15 @@ public class GameInstance implements Listener {
 	private final JailbreakArena arena;
 	
 	private Map<JailbreakPlayer, JailbreakTeam> players = new HashMap<>();
-	private Map<JailbreakTeam, Integer> alive = new HashMap<>();
+	private Set<JailbreakTeam> remaining = new HashSet<>();
 	
 	private GameState gamestate = GameState.WAITING;
 	
 	private MovementSystem movement = MovementPlusPlus.CXOMS_MOVEMENT;
 	
 	private BukkitTask free;
+	
+	///////////////////////////////////////////////////////////////
 	
 	private Lobby lobby = new Lobby();
 	
@@ -118,12 +120,12 @@ public class GameInstance implements Listener {
 		
 	}
 	
+	///////////////////////////////////////////////////////////////
+	
 	public GameInstance(JailbreakArena arena){
-		
 		this.arena = arena;
 		for(JailbreakTeam team : arena.getTeams()){
 			team.setPlayerSupplier(() -> {return players;});
-			alive.put(team, 0);
 		}
 		Bukkit.getServer().getPluginManager().registerEvents(this, Jailbreak.getPlugin());
 	}
@@ -145,7 +147,8 @@ public class GameInstance implements Listener {
 			Jailbreak.addPlayer(jp);
 			JailbreakTeam team = teams.get(i % numTeams);
 			this.players.put(jp, team);
-			this.alive.put(team, alive.get(team) + 1);
+			team.incrementSize();
+			team.incrementAlive();
 			player.teleport(team.getSpawns().get(i % team.getSpawns().size()));
 			InventoryUtils.equipPlayer(player, team.getColor());
 			movement.addPlayer(player);
@@ -153,6 +156,7 @@ public class GameInstance implements Listener {
 			i++;
 			//TODO i18n
 		}
+		remaining.addAll(teams);
 		free = new BukkitRunnable(){
 			@Override
 			public void run(){
@@ -163,21 +167,12 @@ public class GameInstance implements Listener {
 		gamestate = GameState.RUNNING;
 	}
 	
-	private void addAlive(JailbreakTeam team){
-		alive.put(team, alive.get(team) + 1);
-	}
-	
-	private void removeAlive(JailbreakTeam team){
-		alive.put(team, alive.get(team) - 1);
-	}
-	
 	private void respawnPlayer(JailbreakPlayer jp){
 		jp.setFree(false);
 		Player player = jp.getPlayer();
 		player.setHealth(20);
 		player.setFireTicks(0);
-		JailbreakTeam team = players.get(jp);
-		List<Location> jailspawns = team.getJailspawns(); 
+		List<Location> jailspawns = players.get(jp).getJailspawns(); 
 		player.teleport(jailspawns.get((int) (Math.random() * jailspawns.size())));
 	}
 	
@@ -186,7 +181,7 @@ public class GameInstance implements Listener {
 			JailbreakPlayer jp = jpjt.getKey();
 			if (!jp.isFree() && !jpjt.getValue().getJails().contains(jp.getPlayer().getLocation())){
 				jp.setFree(true);
-				addAlive(players.get(jp));
+				(players.get(jp)).incrementAlive();
 				updateGUI();
 			}
 		}
@@ -197,14 +192,14 @@ public class GameInstance implements Listener {
 	}
 	
 	public void checkForWin(JailbreakTeam team){
-		if (alive.get(team) <= 0){
+		if (team.getAlive() <= 0){
 			updateAliveStatuses();
 		}
-		if (alive.get(team) <= 0){
-			alive.remove(team);
+		if (team.getAlive() <= 0){
+			remaining.remove(team);
 		}
-		if (alive.size() == 1){
-			JailbreakTeam winner = alive.keySet().iterator().next(); 
+		if (remaining.size() == 1){
+			JailbreakTeam winner = remaining.iterator().next(); 
 			for(Map.Entry<JailbreakPlayer, JailbreakTeam> jpjt : players.entrySet()){
 				Player player = jpjt.getKey().getPlayer();
 				JailbreakTeam jt = jpjt.getValue();
@@ -227,9 +222,10 @@ public class GameInstance implements Listener {
 			movement.removePlayer(jp.getPlayer());
 		}
 		players.clear();
-		alive.clear();
+		remaining.clear();
 		for(JailbreakTeam team : arena.getTeams()){
-			alive.put(team, 0);
+			team.setSize(0);
+			team.setAlive(0);
 			team.getGoal().setActive(0);
 			team.getGoal().setDefended(0);
 		}
@@ -243,7 +239,7 @@ public class GameInstance implements Listener {
 			e.getEntityDamageEvent().setCancelled(true);
 			respawnPlayer(jp);
 			JailbreakTeam team = players.get(jp);
-			removeAlive(team);
+			team.decrementAlive();
 			updateGUI();
 			checkForWin(team);
 		}
@@ -255,13 +251,17 @@ public class GameInstance implements Listener {
 		if (Jailbreak.isPlayer(player)){ 
 			JailbreakPlayer jp = Jailbreak.getPlayer(player);
 			if (players.containsKey(jp)){
-				removeAlive(players.get(jp));
+				JailbreakTeam team = players.get(jp);
+				team.decrementSize();
+				if (jp.isFree()){
+					team.decrementAlive();
+				}
 				updateGUI();
-				checkForWin(players.get(jp));
+				checkForWin(team);
 				players.remove(jp);
+				Jailbreak.removePlayer(player);
+				PlayerProfile.restore(player);
 			}
-			Jailbreak.removePlayer(player);
-			PlayerProfile.restore(player);
 		} else {
 			lobby.removePlayer(e.getPlayer());
 			// for performance reasons, does checking if a player is in the lobby even matter?
