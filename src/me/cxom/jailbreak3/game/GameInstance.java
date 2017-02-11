@@ -6,10 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,10 +26,10 @@ import com.trinoxtion.movement.MovementSystem;
 
 import me.cxom.jailbreak3.Jailbreak;
 import me.cxom.jailbreak3.arena.Goal;
-import me.cxom.jailbreak3.arena.Goal.PlayerOffGoalEvent;
-import me.cxom.jailbreak3.arena.Goal.PlayerOnGoalEvent;
 import me.cxom.jailbreak3.arena.JailbreakArena;
 import me.cxom.jailbreak3.arena.JailbreakTeam;
+import me.cxom.jailbreak3.arena.Goal.PlayerOffGoalEvent;
+import me.cxom.jailbreak3.arena.Goal.PlayerOnGoalEvent;
 import me.cxom.jailbreak3.events.custom.JailbreakDeathEvent;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
 import me.cxom.jailbreak3.player.PlayerProfile;
@@ -125,6 +129,45 @@ public class GameInstance implements Listener {
 	
 	///////////////////////////////////////////////////////////////
 	
+	private JailbreakGUI gui = new JailbreakGUI();
+	
+	public class JailbreakGUI {
+
+		private BossBar bossbar = Bukkit.createBossBar("", BarColor.WHITE, BarStyle.SEGMENTED_10);
+		
+		public void addPlayer(Player player){
+			bossbar.addPlayer(player);
+		}
+		
+		public void removePlayer(Player player){
+			bossbar.removePlayer(player);
+		}
+		
+		public void removeAll(){
+			bossbar.removeAll();
+		}
+		
+		public void update(){
+			String bar = "";
+			for (JailbreakTeam team : remaining){
+				bar += team.getGoal().getDoor().isOpen() ? team.getChatColor() + "<OPEN>" : ChatColor.GRAY + "<>";
+				bar += " " + team.getChatColor() + team.getName() + " ";
+				bar += StringUtils.repeat("█", team.getAlive());
+				bar += ChatColor.GRAY;
+				bar += StringUtils.repeat("█", team.getSize() - team.getAlive());
+				bar += ChatColor.WHITE + " | ";
+			}
+			bossbar.setTitle(bar.substring(0, Math.max(0, bar.length() - 3)));
+		}
+		
+	}
+	
+	public JailbreakGUI getGUI(){
+		return gui;
+	}
+	
+	///////////////////////////////////////////////////////////////
+	
 	public GameInstance(JailbreakArena arena){
 		this.arena = arena;
 		Bukkit.getServer().getPluginManager().registerEvents(this, Jailbreak.getPlugin());
@@ -150,6 +193,7 @@ public class GameInstance implements Listener {
 			team.incrementSize();
 			team.incrementAlive();
 			player.teleport(team.getSpawns().get(i % team.getSpawns().size()));
+			gui.addPlayer(player);
 			InventoryUtils.equipPlayer(player, team.getColor());
 			movement.addPlayer(player);
 			player.sendMessage(Jailbreak.CHAT_PREFIX + team.getChatColor() + "You are on the " + team.getName() + " Team!");
@@ -163,7 +207,7 @@ public class GameInstance implements Listener {
 				updateAliveStatuses();
 			};
 		}.runTaskTimer(Jailbreak.getPlugin(), 20, 20);
-		updateGUI();
+		gui.update();
 		gamestate = GameState.RUNNING;
 	}
 	
@@ -182,13 +226,9 @@ public class GameInstance implements Listener {
 			if (!jp.isFree() && !jpjt.getValue().getJails().contains(jp.getPlayer().getLocation())){
 				jp.setFree(true);
 				(players.get(jp)).incrementAlive();
-				updateGUI();
+				gui.update();
 			}
 		}
-	}
-	
-	private void updateGUI(){
-		
 	}
 	
 	public void checkForWin(JailbreakTeam team){
@@ -221,6 +261,7 @@ public class GameInstance implements Listener {
 			Jailbreak.removePlayer(jp.getPlayer());
 			movement.removePlayer(jp.getPlayer());
 		}
+		gui.removeAll();
 		players.clear();
 		remaining.clear();
 		for(JailbreakTeam team : arena.getTeams()){
@@ -247,6 +288,7 @@ public class GameInstance implements Listener {
 				goal.addDefended();
 				goal.getDoor().close();
 			}
+			gui.update();
 		}
 	}
 	
@@ -266,6 +308,7 @@ public class GameInstance implements Listener {
 					goal.getDoor().open();
 				}
 			}
+			gui.update();
 		}
 	}
 	
@@ -277,7 +320,7 @@ public class GameInstance implements Listener {
 			respawnPlayer(jp);
 			JailbreakTeam team = players.get(jp);
 			team.decrementAlive();
-			updateGUI();
+			gui.update();
 			checkForWin(team);
 		}
 	}	
@@ -293,7 +336,8 @@ public class GameInstance implements Listener {
 				if (jp.isFree()){
 					team.decrementAlive();
 				}
-				updateGUI();
+				gui.removePlayer(player);
+				gui.update();
 				checkForWin(team);
 				players.remove(jp);
 				Jailbreak.removePlayer(player);
