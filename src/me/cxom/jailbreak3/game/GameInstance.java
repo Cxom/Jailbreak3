@@ -280,7 +280,10 @@ public class GameInstance implements Listener {
 	}
 	
 	private void end(){
-		free.cancel();
+		if (free != null){
+			free.cancel();
+			free = null;
+		}	
 		for(JailbreakPlayer jp : players.keySet()){
 			PlayerProfile.restore(jp.getPlayer());
 			Jailbreak.removePlayer(jp.getPlayer());
