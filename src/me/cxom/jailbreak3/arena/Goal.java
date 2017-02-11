@@ -15,13 +15,15 @@ public class Goal implements Listener{
 
 	private final Location location;
 	private final double radius;
+	private final Door door;
 	
 	private int active = 0;
 	private int defended = 0;
 	
-	public Goal(Location goal, double radius){
+	public Goal(Location goal, double radius, Door door){
 		this.location = goal;
 		this.radius = radius;
+		this.door = door;
 		Bukkit.getServer().getPluginManager().registerEvents(this, Jailbreak.getPlugin());
 	}
 	
@@ -31,6 +33,10 @@ public class Goal implements Listener{
 	
 	public double getRadius(){
 		return radius;
+	}
+	
+	public Door getDoor(){
+		return door;
 	}
 	
 	public boolean isActive(){

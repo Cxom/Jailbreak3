@@ -21,6 +21,9 @@ import com.trinoxtion.movement.MovementPlusPlus;
 import com.trinoxtion.movement.MovementSystem;
 
 import me.cxom.jailbreak3.Jailbreak;
+import me.cxom.jailbreak3.arena.Goal;
+import me.cxom.jailbreak3.arena.Goal.PlayerOffGoalEvent;
+import me.cxom.jailbreak3.arena.Goal.PlayerOnGoalEvent;
 import me.cxom.jailbreak3.arena.JailbreakArena;
 import me.cxom.jailbreak3.arena.JailbreakTeam;
 import me.cxom.jailbreak3.events.custom.JailbreakDeathEvent;
@@ -124,9 +127,6 @@ public class GameInstance implements Listener {
 	
 	public GameInstance(JailbreakArena arena){
 		this.arena = arena;
-		for(JailbreakTeam team : arena.getTeams()){
-			team.setPlayerSupplier(() -> {return players;});
-		}
 		Bukkit.getServer().getPluginManager().registerEvents(this, Jailbreak.getPlugin());
 	}
 	
@@ -228,8 +228,45 @@ public class GameInstance implements Listener {
 			team.setAlive(0);
 			team.getGoal().setActive(0);
 			team.getGoal().setDefended(0);
+			team.getGoal().getDoor().close();
 		}
 		gamestate = GameState.WAITING;
+	}
+	
+	@EventHandler
+	public void onWalkOnGoal(PlayerOnGoalEvent e){
+		if (players.containsKey(e.getJailbreakPlayer())){
+			JailbreakTeam team = players.get(e.getJailbreakPlayer());
+			Goal goal = e.getGoal();
+			if (goal.equals(team.getGoal())){
+				goal.addActive();
+				if (!goal.isDefended()){
+					goal.getDoor().open();
+				}
+			} else {
+				goal.addDefended();
+				goal.getDoor().close();
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onWalkOffGoal(PlayerOffGoalEvent e){
+		if (players.containsKey(e.getJailbreakPlayer())){
+			JailbreakTeam team = players.get(e.getJailbreakPlayer());
+			Goal goal = e.getGoal();
+			if (e.getGoal().equals(team.getGoal())){
+				goal.removeActive();
+				if (!goal.isActive()){
+					goal.getDoor().close();
+				}
+			} else {
+				goal.removeDefended();
+				if (goal.isActive()){
+					goal.getDoor().open();
+				}
+			}
+		}
 	}
 	
 	@EventHandler

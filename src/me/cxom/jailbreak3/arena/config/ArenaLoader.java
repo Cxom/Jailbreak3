@@ -67,7 +67,10 @@ public class ArenaLoader {
 		Location goalL = getLocation(section.getConfigurationSection("goal.location"), world);
 		if (goalL == null) return null;
 		Double radius = section.getDouble("goal.radius", 2.5);
-		Goal goal = new Goal(goalL, radius);
+		List<Region> doorRegions = getRegionList(section.getConfigurationSection("doors"));
+		if (doorRegions.isEmpty()) return null;
+		Door door = new Door(new MultiRegion(doorRegions));
+		Goal goal = new Goal(goalL, radius, door);
 		
 		List<Location> jailspawns = ArenaLoader.getList(section.getConfigurationSection("jailspawns"),
 				(ConfigurationSection spawn) -> { return ArenaLoader.getLocation(spawn, world); });
@@ -77,11 +80,7 @@ public class ArenaLoader {
 		if (jailRegions.isEmpty()) return null;
 		Area jails = new MultiRegion(jailRegions);
 		
-		List<Region> doorRegions = getRegionList(section.getConfigurationSection("doors"));
-		if (doorRegions.isEmpty()) return null;
-		Door door = new Door(new MultiRegion(doorRegions));
-		
-		return new JailbreakTeam(name, color, spawns, goal, jailspawns, jails, door);
+		return new JailbreakTeam(name, color, spawns, goal, jailspawns, jails);
 	}
 	
 	/*Static loading parsers*/
