@@ -15,17 +15,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import me.cxom.jailbreak3.Jailbreak;
-import me.cxom.jailbreak3.game.GameInstance;
+import me.cxom.jailbreak3.game.JailbreakGame;
 
 public class JailbreakMenu implements Listener {
 
 	private static final String title = "Jailbreak Games"; //TODO i18n (Comparing enum values, most likely, for events below)
 	
 	public static Inventory getMenu(){
-		Map<String, GameInstance> games = Jailbreak.getGameMap();
+		Map<String, JailbreakGame> games = Jailbreak.getGameMap();
 		Inventory menu = Bukkit.createInventory(null, (games.size() / 9 + 1) * 9, title); 
-		for (Map.Entry<String, GameInstance> gameEntry : games.entrySet()){
-			GameInstance game = gameEntry.getValue();
+		for (Map.Entry<String, JailbreakGame> gameEntry : games.entrySet()){
+			JailbreakGame game = gameEntry.getValue();
 			ItemStack gameMarker = game.getGameState().getMenuItem();
 			ItemMeta meta = gameMarker.getItemMeta();
 			meta.setDisplayName(ChatColor.BLUE + gameEntry.getKey());
@@ -39,14 +39,21 @@ public class JailbreakMenu implements Listener {
 	
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e){
-		if (e.getCurrentItem() == null) return;
-		if (!e.getCurrentItem().hasItemMeta()) return;
+		if (e.getClickedInventory() == null) return;
 		if (title.equals(e.getClickedInventory().getName())){
-			ItemStack clicked = e.getCurrentItem();
-			if(! ChatColor.stripColor(clicked.getItemMeta().getLore().get(1)).equals("STOPPED")){
-				Jailbreak.getGame(ChatColor.stripColor(clicked.getItemMeta().getDisplayName())).getLobby().addPlayer((Player) e.getWhoClicked());
-				e.getWhoClicked().closeInventory();
+			if (e.getCurrentItem() != null
+			 && e.getCurrentItem().hasItemMeta()
+			 && e.getCurrentItem().getItemMeta().hasLore()){
+				ItemStack clicked = e.getCurrentItem();
+				if(! ChatColor.stripColor(clicked.getItemMeta().getLore().get(1)).equals("STOPPED")){
+					JailbreakGame game = Jailbreak.getGame(ChatColor.stripColor(clicked.getItemMeta().getDisplayName()));
+					if (game != null){
+						game.getLobby().addPlayer((Player) e.getWhoClicked());
+						e.getWhoClicked().closeInventory();
+					}
+				}
 			}
+			e.setCancelled(true);
 		}
 	}
 	

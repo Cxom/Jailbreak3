@@ -17,14 +17,16 @@ public class Door implements Listener{
 	}
 	
 	public void open(){
+		if (open) return;
 		for(Block b : door)
 			b.setType(Material.AIR);
 		open = true;
 	}
 	
 	public void close(){
+		if (!open) return;
 		for(Block b : door)
-			b.setType(Material.IRON_FENCE);
+			b.setType(Material.IRON_BARS);
 		open = false;
 	}
 	

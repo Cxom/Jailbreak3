@@ -44,6 +44,7 @@ public class PlayerProfile {
 	private final boolean flying;
 	private final int xpLvl;
 	private final float xp;
+	private final double health;
 	private final int hunger;
 	private final float saturation;
 	private final float exhaustion;
@@ -57,6 +58,7 @@ public class PlayerProfile {
 		this.flying = player.isFlying();
 		this.xpLvl = player.getLevel();
 		this.xp = player.getExp();
+		this.health = player.getHealth();
 		this.hunger = player.getFoodLevel();
 		this.saturation = player.getSaturation();
 		this.exhaustion = player.getExhaustion();
@@ -70,6 +72,7 @@ public class PlayerProfile {
 		player.setFlying(flying);
 		player.setLevel(xpLvl);
 		player.setExp(xp);
+		player.setHealth(health);
 		player.setFoodLevel(hunger);
 		player.setSaturation(saturation);
 		player.setExhaustion(exhaustion);

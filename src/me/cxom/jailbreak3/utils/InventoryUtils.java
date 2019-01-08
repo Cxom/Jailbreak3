@@ -15,7 +15,7 @@ public class InventoryUtils {
 
 	public static void equipPlayer(Player player, JailbreakColor color) {
 		PlayerInventory pi = player.getInventory();
-		pi.setItem(0, makeUnbreakable(new ItemStack(Material.WOOD_SWORD)));
+		pi.setItem(0, makeUnbreakable(new ItemStack(Material.STONE_SWORD)));
 		ItemStack b = makeUnbreakable(new ItemStack(Material.BOW));
 		ItemMeta m = b.getItemMeta();
 		m.addEnchant(Enchantment.ARROW_INFINITE, 1, false);

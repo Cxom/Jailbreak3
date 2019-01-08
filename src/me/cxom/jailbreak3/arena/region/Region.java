@@ -99,55 +99,55 @@ public class Region implements Area{
 		
 	}
 	
-	@SuppressWarnings("deprecation")
-	public void set(Material m, byte data){
-		World world = this.getMin().getWorld();
-		for (int x = this.getMin().getBlockX(); x <= this.getMax().getBlockX(); x++){
-			for (int y = this.getMin().getBlockY(); y <= this.getMax().getBlockY(); y++){
-				for (int z = this.getMin().getBlockZ(); z <= this.getMax().getBlockZ(); z++){
-					Block b = new Location(world, x, y, z).getBlock();
-					b.setType(m);
-					b.setData(data);
-				}
-			}
-		}
-	}
-	
-	@SuppressWarnings("deprecation")
-	private void showBlocks(Plugin p, Location a, Location b, Location c, Location d, Material m, byte data){
-		final Block ab = a.getBlock();
-		final Block bb = b.getBlock();
-		final Block cb = c.getBlock();
-		final Block db = d.getBlock();
-		final Material am = ab.getType();
-		final Material bm = bb.getType();
-		final Material cm = cb.getType();
-		final Material dm = db.getType();
-		final byte ad = ab.getData();
-		final byte bd = bb.getData();
-		final byte cd = cb.getData();
-		final byte dd = db.getData();
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(p, new Runnable(){
-			public void run(){
-				ab.setType(am);
-				ab.setData(ad);
-				bb.setType(bm);
-				bb.setData(bd);
-				cb.setType(cm);
-				cb.setData(cd);
-				db.setType(dm);
-				db.setData(dd);
-			}
-		}, 100);
-		ab.setType(m);
-		ab.setData(data);
-		bb.setType(m);
-		bb.setData(data);
-		cb.setType(m);
-		cb.setData(data);
-		db.setType(m);
-		db.setData(data);
-	}
+//	@SuppressWarnings("deprecation")
+//	public void set(Material m, byte data){
+//		World world = this.getMin().getWorld();
+//		for (int x = this.getMin().getBlockX(); x <= this.getMax().getBlockX(); x++){
+//			for (int y = this.getMin().getBlockY(); y <= this.getMax().getBlockY(); y++){
+//				for (int z = this.getMin().getBlockZ(); z <= this.getMax().getBlockZ(); z++){
+//					Block b = new Location(world, x, y, z).getBlock();
+//					b.setType(m);
+//					b.setData(data);
+//				}
+//			}
+//		}
+//	}
+//	
+//	@SuppressWarnings("deprecation")
+//	private void showBlocks(Plugin p, Location a, Location b, Location c, Location d, Material m, byte data){
+//		final Block ab = a.getBlock();
+//		final Block bb = b.getBlock();
+//		final Block cb = c.getBlock();
+//		final Block db = d.getBlock();
+//		final Material am = ab.getType();
+//		final Material bm = bb.getType();
+//		final Material cm = cb.getType();
+//		final Material dm = db.getType();
+//		final byte ad = ab.getData();
+//		final byte bd = bb.getData();
+//		final byte cd = cb.getData();
+//		final byte dd = db.getData();
+//		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(p, new Runnable(){
+//			public void run(){
+//				ab.setType(am);
+//				ab.setData(ad);
+//				bb.setType(bm);
+//				bb.setData(bd);
+//				cb.setType(cm);
+//				cb.setData(cd);
+//				db.setType(dm);
+//				db.setData(dd);
+//			}
+//		}, 100);
+//		ab.setType(m);
+//		ab.setData(data);
+//		bb.setType(m);
+//		bb.setData(data);
+//		cb.setType(m);
+//		cb.setData(data);
+//		db.setType(m);
+//		db.setData(data);
+//	}
 	
 	public void setParent(Region r) throws IllegalArgumentException{
 		if(!this.isInside(r)){
@@ -156,35 +156,35 @@ public class Region implements Area{
 		parent = r;
 	}
 	
-	public void show(Plugin p, Material m, byte data){			//TO BE FINISHED, NEEDS ARRAYS OF STORED BLOCKS (OR, RATHER, ANOTHER METHOD FOR SUCH, INDIVIDUALLY, EACH TIME)
-		World world = this.getMin().getWorld();
-		Location[] corners = this.getCorners();
-		for (int x = this.getMin().getBlockX(); x <= this.getMax().getBlockX(); x++){
-			Location a = new Location(world, x, corners[4].getY(), corners[4].getZ());
-			Location b = new Location(world, x, corners[5].getY(), corners[5].getZ());
-			Location c = new Location(world, x, corners[6].getY(), corners[6].getZ());
-			Location d = new Location(world, x, corners[7].getY(), corners[7].getZ());
-			
-			showBlocks(p, a, b, c, d, m, data);
-		}
-		for (int y = this.getMin().getBlockY(); y <= this.getMax().getBlockY(); y++){
-			Location a = new Location(world, corners[2].getX(), y, corners[2].getZ());
-			Location b = new Location(world, corners[3].getX(), y, corners[3].getZ());
-			Location c = new Location(world, corners[6].getX(), y, corners[6].getZ());
-			Location d = new Location(world, corners[7].getX(), y, corners[7].getZ());
-
-			showBlocks(p, a, b, c, d, m, data);
-		}
-		for (int z = this.getMin().getBlockZ(); z <= this.getMax().getBlockZ(); z++){
-			Location a = new Location(world, corners[1].getX(), corners[1].getY(), z);
-			Location b = new Location(world, corners[3].getX(), corners[3].getY(), z);
-			Location c = new Location(world, corners[5].getX(), corners[5].getY(), z);
-			Location d = new Location(world, corners[7].getX(), corners[7].getY(), z);
-
-			showBlocks(p, a, b, c, d, m, data);
-		}
-		
-	}
+//	public void show(Plugin p, Material m, byte data){			//TO BE FINISHED, NEEDS ARRAYS OF STORED BLOCKS (OR, RATHER, ANOTHER METHOD FOR SUCH, INDIVIDUALLY, EACH TIME)
+//		World world = this.getMin().getWorld();
+//		Location[] corners = this.getCorners();
+//		for (int x = this.getMin().getBlockX(); x <= this.getMax().getBlockX(); x++){
+//			Location a = new Location(world, x, corners[4].getY(), corners[4].getZ());
+//			Location b = new Location(world, x, corners[5].getY(), corners[5].getZ());
+//			Location c = new Location(world, x, corners[6].getY(), corners[6].getZ());
+//			Location d = new Location(world, x, corners[7].getY(), corners[7].getZ());
+//			
+//			showBlocks(p, a, b, c, d, m, data);
+//		}
+//		for (int y = this.getMin().getBlockY(); y <= this.getMax().getBlockY(); y++){
+//			Location a = new Location(world, corners[2].getX(), y, corners[2].getZ());
+//			Location b = new Location(world, corners[3].getX(), y, corners[3].getZ());
+//			Location c = new Location(world, corners[6].getX(), y, corners[6].getZ());
+//			Location d = new Location(world, corners[7].getX(), y, corners[7].getZ());
+//
+//			showBlocks(p, a, b, c, d, m, data);
+//		}
+//		for (int z = this.getMin().getBlockZ(); z <= this.getMax().getBlockZ(); z++){
+//			Location a = new Location(world, corners[1].getX(), corners[1].getY(), z);
+//			Location b = new Location(world, corners[3].getX(), corners[3].getY(), z);
+//			Location c = new Location(world, corners[5].getX(), corners[5].getY(), z);
+//			Location d = new Location(world, corners[7].getX(), corners[7].getY(), z);
+//
+//			showBlocks(p, a, b, c, d, m, data);
+//		}
+//		
+//	}
 	
 	public boolean touches(Region r){
 		Location[] corners = r.getCorners();

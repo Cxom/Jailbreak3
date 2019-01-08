@@ -6,10 +6,11 @@ import org.bukkit.inventory.ItemStack;
 
 public enum GameState {
 
-	STARTING(ChatColor.YELLOW, new ItemStack(Material.STAINED_CLAY, 1 , (short) 4)),
-	RUNNING(ChatColor.LIGHT_PURPLE, new ItemStack(Material.STAINED_CLAY, 1 , (short) 6)),
-	WAITING(ChatColor.GREEN, new ItemStack(Material.STAINED_CLAY, 1 , (short) 5)),
-	STOPPED(ChatColor.RED, new ItemStack(Material.STAINED_CLAY, 1 , (short) 14));
+	STARTING(ChatColor.YELLOW, new ItemStack(Material.YELLOW_CONCRETE)),
+	RUNNING(ChatColor.LIGHT_PURPLE, new ItemStack(Material.PINK_CONCRETE)),
+	ENDING(ChatColor.GOLD, new ItemStack(Material.ORANGE_CONCRETE)),
+	WAITING(ChatColor.GREEN, new ItemStack(Material.LIME_CONCRETE)),
+	STOPPED(ChatColor.RED, new ItemStack(Material.RED_CONCRETE));
 	
 	private final ChatColor chatColor;
 	private final ItemStack menuItem;

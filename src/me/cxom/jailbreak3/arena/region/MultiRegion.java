@@ -1,5 +1,6 @@
 package me.cxom.jailbreak3.arena.region;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class MultiRegion implements Area{
 	
 	@Override
 	public Iterator<Block> iterator(){
-		Iterator<Block> it = Iterators.emptyIterator();
+		Iterator<Block> it = Collections.emptyIterator();
 		for(Region r : regions)
 			it = Iterators.concat(it, r.iterator());
 		return it;

@@ -17,7 +17,7 @@ import me.cxom.jailbreak3.arena.config.ArenaManager;
 import me.cxom.jailbreak3.events.CancelledEvents;
 import me.cxom.jailbreak3.events.CommandEvents;
 import me.cxom.jailbreak3.events.custom.JailbreakDeathEventCaller;
-import me.cxom.jailbreak3.game.GameInstance;
+import me.cxom.jailbreak3.game.JailbreakGame;
 import me.cxom.jailbreak3.player.JailbreakMenu;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
 import me.cxom.jailbreak3.player.PlayerProfile;
@@ -31,7 +31,7 @@ public class Jailbreak extends JavaPlugin{
 	
 	private static Map<UUID, JailbreakPlayer> players = new HashMap<>();
 	
-	private static Map<String, GameInstance> games = new HashMap<>();
+	private static Map<String, JailbreakGame> games = new HashMap<>();
 	
 	@Override
 	public void onEnable(){
@@ -43,13 +43,13 @@ public class Jailbreak extends JavaPlugin{
 		//register events
 		ArenaManager.loadArenas();
 		for(JailbreakArena arena : ArenaManager.getArenas()){
-			games.put(arena.getName(), new GameInstance(arena));
+			games.put(arena.getName(), new JailbreakGame(arena));
 		}
 	}
 	
 	@Override
 	public void onDisable(){
-		for (GameInstance game : games.values()){
+		for (JailbreakGame game : games.values()){
 			game.forceStop();
 		}
 		PlayerProfile.restoreAll(); // this should be redundant (forcestop should restore all inventories)
@@ -100,11 +100,11 @@ public class Jailbreak extends JavaPlugin{
 		players.remove(uuid);
 	}
 	
-	public static GameInstance getGame(String name){
+	public static JailbreakGame getGame(String name){
 		return games.get(name);
 	}
 
-	public static Map<String, GameInstance> getGameMap(){
+	public static Map<String, JailbreakGame> getGameMap(){
 		return games;
 	}
 	
