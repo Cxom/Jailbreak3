@@ -114,6 +114,7 @@ public class JailbreakGame implements PvpGame, Listener {
 			player.setInvulnerable(false);
 			player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1.1f);
 			gui.addPlayer(player);
+			player.getInventory().clear();
 			InventoryUtils.equipPlayer(player, team.getColor());
 			movement.addPlayer(player);
 			player.sendMessage(Jailbreak.CHAT_PREFIX + team.getChatColor() + "You are on the " + team.getName() + " Team!");

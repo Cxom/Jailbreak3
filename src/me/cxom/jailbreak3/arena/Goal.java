@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import me.cxom.jailbreak3.Jailbreak;
+import me.cxom.jailbreak3.events.custom.JailbreakDeathEvent;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
 
 public class Goal implements Listener{
@@ -143,6 +144,13 @@ public class Goal implements Listener{
 			} else if (isOnGoal(e.getFrom()) && !isOnGoal(e.getTo())){
 				Bukkit.getServer().getPluginManager().callEvent(new PlayerOffGoalEvent(this, Jailbreak.getPlayer(e.getPlayer())));
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onDieOnGoal(JailbreakDeathEvent e) {
+		if (isOnGoal(e.getJailbreakPlayer().getPlayer().getLocation())) {
+			Bukkit.getServer().getPluginManager().callEvent(new PlayerOffGoalEvent(this, e.getJailbreakPlayer()));
 		}
 	}
 	
