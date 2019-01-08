@@ -30,13 +30,14 @@ import me.cxom.jailbreak3.arena.Goal.PlayerOnGoalEvent;
 import me.cxom.jailbreak3.arena.JailbreakArena;
 import me.cxom.jailbreak3.arena.JailbreakTeam;
 import me.cxom.jailbreak3.events.custom.JailbreakDeathEvent;
+import me.cxom.jailbreak3.game.lobby.Lobby;
 import me.cxom.jailbreak3.gui.JailbreakGUI;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
 import me.cxom.jailbreak3.player.PlayerProfile;
 import me.cxom.jailbreak3.utils.FireworkUtils;
 import me.cxom.jailbreak3.utils.InventoryUtils;
 
-public class JailbreakGame implements Listener {
+public class JailbreakGame implements PvpGame, Listener {
 
 	final JailbreakArena arena;
 	
@@ -51,7 +52,7 @@ public class JailbreakGame implements Listener {
 	
 	///////////////////////////////////////////////////////////////
 	
-	private Lobby lobby = new Lobby(this);
+	private Lobby lobby;
 	
 	public Lobby getLobby(){
 		return lobby;
@@ -59,7 +60,7 @@ public class JailbreakGame implements Listener {
 	
 	///////////////////////////////////////////////////////////////
 	
-	private JailbreakGUI gui = new JailbreakGUI(this);
+	private JailbreakGUI gui;
 	
 	public JailbreakGUI getGUI(){
 		return gui;
@@ -69,7 +70,21 @@ public class JailbreakGame implements Listener {
 	
 	public JailbreakGame(JailbreakArena arena){
 		this.arena = arena;
+		this.lobby = new Lobby(this, this::start);
+		this.gui = new JailbreakGUI(this);
 		Bukkit.getServer().getPluginManager().registerEvents(this, Jailbreak.getPlugin());
+	}
+	
+	public String getName() {
+		return arena.getName();
+	}
+	
+	public Location getPregameLobbySpawn() {
+		return arena.getPregameLobby();
+	}
+	
+	public int getPlayersNeededToStart() {
+		return arena.getPlayersToStart();
 	}
 	
 	public GameState getGameState(){
@@ -145,7 +160,7 @@ public class JailbreakGame implements Listener {
 				PlayerProfile.restore(player);
 			}
 		} else {
-			lobby.removePlayer(player);
+			lobby.removeAndRestorePlayer(player);
 		}
 	}
 	
@@ -283,7 +298,7 @@ public class JailbreakGame implements Listener {
 	
 	public void forceStop(){
 		end();
-		lobby.removeAll();
+		lobby.removeAndRestoreAll();
 		gamestate = GameState.STOPPED;
 	}
 	

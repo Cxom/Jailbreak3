@@ -1,6 +1,6 @@
 name: Jailbreak3
 main: me.cxom.jailbreak3.Jailbreak
-version: 1.1.1
+version: 1.1.2
 api-version: 1.13
 description: Rendition 3 of the Minecraft minigame Jailbreak
 depend: [MovementPlusPlus]
@@ -8,3 +8,4 @@ soft-depend: [ActionBarAPI]
 
 commands:
   jailbreak:
+    aliases: jb

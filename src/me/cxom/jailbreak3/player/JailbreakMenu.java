@@ -30,7 +30,7 @@ public class JailbreakMenu implements Listener {
 			ItemMeta meta = gameMarker.getItemMeta();
 			meta.setDisplayName(ChatColor.BLUE + gameEntry.getKey());
 			meta.setLore(Arrays.asList(game.getGameState().getChatColor() + game.getGameState().name(),
-									   game.getLobby().getWaitingPlayers().size() + " player(s) in lobby.")); //TODO i18n
+									   game.getLobby().getPlayers().size() + " player(s) in lobby.")); //TODO i18n
 			gameMarker.setItemMeta(meta);
 			menu.addItem(gameMarker);
 		}
@@ -48,7 +48,7 @@ public class JailbreakMenu implements Listener {
 				if(! ChatColor.stripColor(clicked.getItemMeta().getLore().get(1)).equals("STOPPED")){
 					JailbreakGame game = Jailbreak.getGame(ChatColor.stripColor(clicked.getItemMeta().getDisplayName()));
 					if (game != null){
-						game.getLobby().addPlayer((Player) e.getWhoClicked());
+						game.getLobby().addPlayerIfPossible((Player) e.getWhoClicked());
 						e.getWhoClicked().closeInventory();
 					}
 				}

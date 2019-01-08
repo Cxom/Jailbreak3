@@ -58,22 +58,21 @@ public class Jailbreak extends JavaPlugin{
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-		if (label.equalsIgnoreCase("jailbreak")){
-			if (args.length == 0){
-				if (! (sender instanceof Player)) return true;
-				if (PlayerProfile.isSaved((Player) sender)) return true;
-				((Player) sender).openInventory(JailbreakMenu.getMenu());
+		
+		if (args.length == 0){
+			if (! (sender instanceof Player)) return true;
+			if (PlayerProfile.isSaved((Player) sender)) return true;
+			((Player) sender).openInventory(JailbreakMenu.getMenu());
+			return true;
+		} else if (args.length >= 2 && args[0].equalsIgnoreCase("join")){
+			if (! (sender instanceof Player)) return true;
+			Player player = (Player) sender;
+			if (! games.containsKey(args[1])){
+				player.sendMessage(Jailbreak.CHAT_PREFIX + ChatColor.RED + " There is no game/arena named " + args[1] + "!");
 				return true;
-			} else if (args.length >= 2 && args[0].equalsIgnoreCase("join")){
-				if (! (sender instanceof Player)) return true;
-				Player player = (Player) sender;
-				if (! games.containsKey(args[1])){
-					player.sendMessage(Jailbreak.CHAT_PREFIX + ChatColor.RED + " There is no game/arena named " + args[1] + "!");
-					return true;
-				} else {
-					games.get(args[1]).getLobby().addPlayer(player);
-					return true;
-				}
+			} else {
+				games.get(args[1]).getLobby().addPlayerIfPossible(player);
+				return true;
 			}
 		}
 		

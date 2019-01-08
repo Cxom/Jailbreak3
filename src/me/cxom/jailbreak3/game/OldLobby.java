@@ -12,12 +12,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.cxom.jailbreak3.Jailbreak;
 import me.cxom.jailbreak3.player.PlayerProfile;
 
-public class Lobby {
+public class OldLobby {
 	
 	private JailbreakGame game;
 	Set<Player> waitingPlayers = new HashSet<>();
 	
-	public Lobby(JailbreakGame game) {
+	public OldLobby(JailbreakGame game) {
 		this.game = game;
 	}
 	
