@@ -10,13 +10,16 @@ import org.bukkit.entity.Player;
 
 import com.connorlinfoot.actionbarapi.ActionBarAPI;
 
+import me.cxom.jailbreak3.Jailbreak;
 import me.cxom.jailbreak3.arena.JailbreakTeam;
+import me.cxom.jailbreak3.game.AttackMethod;
 import me.cxom.jailbreak3.game.JailbreakGame;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
 
 public class JailbreakGUI {
 
 	private BossBar bossbar = Bukkit.createBossBar("", BarColor.WHITE, BarStyle.SEGMENTED_10);
+	private Killfeed killfeed = new Killfeed(Jailbreak.CHAT_PREFIX);
 	
 	private JailbreakGame game;
 	
@@ -26,14 +29,17 @@ public class JailbreakGUI {
 	
 	public void addPlayer(Player player){
 		bossbar.addPlayer(player);
+		killfeed.addPlayer(player);
 	}
 	
 	public void removePlayer(Player player){
 		bossbar.removePlayer(player);
+		killfeed.removePlayer(player);
 	}
 	
 	public void removeAll(){
 		bossbar.removeAll();
+		killfeed.removeAll();
 	}
 	
 	public void update(){
@@ -60,6 +66,10 @@ public class JailbreakGUI {
 		for (JailbreakPlayer jp: game.getPlayers().keySet()){
 			ActionBarAPI.sendActionBar(jp.getPlayer(), message);
 		}
+	}
+	
+	public void sendKill(JailbreakPlayer killer, JailbreakPlayer killed, AttackMethod attackMethod) {
+		killfeed.sendKill(killer, killed, attackMethod);
 	}
 	
 }

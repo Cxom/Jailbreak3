@@ -6,15 +6,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -104,9 +108,11 @@ public class JailbreakGame implements PvpGame, Listener {
 		int numTeams = teams.size();
 		int i = 0;
 		for(Player player : players){
-			JailbreakPlayer jp = new JailbreakPlayer(player);
-			Jailbreak.addPlayer(jp);
 			JailbreakTeam team = teams.get(i % numTeams);
+			
+			JailbreakPlayer jp = new JailbreakPlayer(player, team);
+			Jailbreak.addPlayer(jp);
+			
 			this.players.put(jp, team);
 			team.incrementSize();
 			team.incrementAlive();
@@ -276,6 +282,37 @@ public class JailbreakGame implements PvpGame, Listener {
 	public void onJailbreakDeath(JailbreakDeathEvent e){
 		JailbreakPlayer jp = e.getJailbreakPlayer();
 		if (players.containsKey(jp)){
+			
+			Player killer = null;
+			EntityDamageByEntityEvent edbee = null;
+			
+			if (e.getEntityDamageEvent() instanceof EntityDamageByEntityEvent) {
+				edbee = (EntityDamageByEntityEvent) e.getEntityDamageEvent();
+				Entity killingEntity = edbee.getDamager();
+				
+				// Determine killer
+				if (killingEntity instanceof Player && Jailbreak.isPlayer(killingEntity.getUniqueId())){
+					//Killed by a player (also in game)
+					killer = (Player) killingEntity;	
+					
+				} else if (killingEntity instanceof Arrow && ((Arrow) killingEntity).getShooter() instanceof Player){
+					//Killed by an arrow shot by a player (not sure if player in game yet)
+					
+					Player shooter = (Player) ((Arrow) killingEntity).getShooter();
+					killingEntity.remove();
+					
+					if (Jailbreak.isPlayer(shooter.getUniqueId())){
+						//Player who shot arrow is in game
+						killer = shooter;
+						
+					}
+				}
+				
+				if (killer != null) {
+					gui.sendKill(Jailbreak.getPlayer(killer), jp, AttackMethod.getAttackMethod(edbee.getDamager()));
+				}
+			}
+			
 			e.getEntityDamageEvent().setCancelled(true);
 			respawnPlayer(jp);
 			JailbreakTeam team = players.get(jp);
@@ -287,14 +324,22 @@ public class JailbreakGame implements PvpGame, Listener {
 	
 	@EventHandler
 	public void onPlayerLeaveGame(PlayerCommandPreprocessEvent e){
-		if (e.getMessage().equalsIgnoreCase("/jailbreak leave")){
+		if (e.getMessage().equalsIgnoreCase("/jailbreak leave") && hasPlayer(e.getPlayer())){
 			removePlayer(e.getPlayer());
 		}
 	}
 	
+	private boolean hasPlayer(Player player) { return hasPlayer(player.getUniqueId()); }
+	private boolean hasPlayer(UUID uniqueId) {
+		JailbreakPlayer jp = Jailbreak.getPlayer(uniqueId);
+		return (jp != null && players.containsKey(jp));
+	}
+	
 	@EventHandler
 	public void onPlayerQuitServer(PlayerQuitEvent e){
-		removePlayer(e.getPlayer());
+		if (hasPlayer(e.getPlayer())) {
+			removePlayer(e.getPlayer());
+		}
 	}
 	
 	public void forceStop(){
