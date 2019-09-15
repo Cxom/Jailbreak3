@@ -40,7 +40,7 @@ public class JailbreakMenu implements Listener {
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e){
 		if (e.getClickedInventory() == null) return;
-		if (title.equals(e.getClickedInventory().getName())){
+		if (title.equals(e.getView().getTitle())){
 			if (e.getCurrentItem() != null
 			 && e.getCurrentItem().hasItemMeta()
 			 && e.getCurrentItem().getItemMeta().hasLore()){
@@ -59,7 +59,7 @@ public class JailbreakMenu implements Listener {
 	
 	@EventHandler
 	public void onMenuDrag(InventoryDragEvent e){
-		if(e.getInventory().getName().equals(title)){
+		if(e.getView().getTitle().equals(title)){
 			e.setCancelled(true);
 		}
 	}

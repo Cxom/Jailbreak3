@@ -41,6 +41,7 @@ public class PlayerProfile {
 	private final ItemStack[] armor;
 	private final Location location;
 	private final GameMode gamemode;
+	private final boolean canFly;
 	private final boolean flying;
 	private final int xpLvl;
 	private final float xp;
@@ -55,6 +56,7 @@ public class PlayerProfile {
 		this.armor = player.getInventory().getArmorContents();
 		this.location = player.getLocation();
 		this.gamemode = player.getGameMode();
+		this.canFly = player.getAllowFlight();
 		this.flying = player.isFlying();
 		this.xpLvl = player.getLevel();
 		this.xp = player.getExp();
@@ -69,6 +71,7 @@ public class PlayerProfile {
 		player.getInventory().setContents(inventory);
 		player.getInventory().setArmorContents(armor);
 		player.setGameMode(gamemode);
+		player.setAllowFlight(canFly);
 		player.setFlying(flying);
 		player.setLevel(xpLvl);
 		player.setExp(xp);

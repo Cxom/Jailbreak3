@@ -236,7 +236,7 @@ public class Lobby {
 				isCountingDown = false;
 			}
 			
-		}.runTaskTimerAsynchronously(Jailbreak.getPlugin(), 20, 20);
+		}.runTaskTimer(Jailbreak.getPlugin(), 20, 20);
 	}
 	
 	public void startNow(){
