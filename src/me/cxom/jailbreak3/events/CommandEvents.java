@@ -11,7 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import me.cxom.jailbreak3.Jailbreak;
-import me.cxom.jailbreak3.player.PlayerProfile;
+import net.punchtree.minigames.utility.player.PlayerProfile;
 
 public class CommandEvents implements Listener{
 

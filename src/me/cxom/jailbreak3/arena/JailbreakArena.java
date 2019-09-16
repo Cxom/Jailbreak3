@@ -4,30 +4,15 @@ import java.util.List;
 
 import org.bukkit.Location;
 
-public class JailbreakArena {
+import net.punchtree.minigames.arena.Arena;
+
+public class JailbreakArena extends Arena {
 	
-	private final String name;
-	private final Location pregameLobby;
-	private final int playersToStart;
 	private final List<JailbreakTeam> teams;
 	
-	public JailbreakArena(String name, Location pregameLobby, int playersToStart, List<JailbreakTeam> teams){
-		this.name = name;
-		this.pregameLobby = pregameLobby;
-		this.playersToStart = playersToStart;
+	public JailbreakArena(String name, Location pregameLobby, int playersNeededToStart, List<JailbreakTeam> teams){
+		super(name, pregameLobby, playersNeededToStart);
 		this.teams = teams;
-	}
-	
-	public String getName(){
-		return name;
-	}
-	
-	public Location getPregameLobby(){
-		return pregameLobby;
-	}
-	
-	public int getPlayersToStart(){
-		return playersToStart;
 	}
 	
 	public List<JailbreakTeam> getTeams(){

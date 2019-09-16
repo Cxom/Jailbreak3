@@ -18,10 +18,10 @@ import me.cxom.jailbreak3.arena.Door;
 import me.cxom.jailbreak3.arena.Goal;
 import me.cxom.jailbreak3.arena.JailbreakArena;
 import me.cxom.jailbreak3.arena.JailbreakTeam;
-import me.cxom.jailbreak3.arena.region.Area;
-import me.cxom.jailbreak3.arena.region.MultiRegion;
-import me.cxom.jailbreak3.arena.region.Region;
-import me.cxom.jailbreak3.utils.JailbreakColor;
+import net.punchtree.minigames.region.Area;
+import net.punchtree.minigames.region.MultiRegion;
+import net.punchtree.minigames.region.Region;
+import net.punchtree.minigames.utility.color.MinigameColor;
 
 public class ArenaLoader {
 	
@@ -49,12 +49,12 @@ public class ArenaLoader {
 	public static JailbreakTeam getTeam(ConfigurationSection section){
 		String name = section.getString("name");
 
-		JailbreakColor color = getColor(section.getConfigurationSection("color"));
+		MinigameColor color = getColor(section.getConfigurationSection("color"));
 		if (name == null && color == null) return null;
 		if (name == null){
 			name = StringUtils.capitalize(color.getChatColor().name());
 		} else if (color == null){
-			color = JailbreakColor.valueOf(name); //Defaults to white
+			color = MinigameColor.valueOf(name); //Defaults to white
 		}
 		
 		World world = getRootWorld(section);
@@ -98,7 +98,7 @@ public class ArenaLoader {
         return name.substring(0, name.length() - 4);
 	}
 	
-	public static JailbreakColor getColor(ConfigurationSection section){
+	public static MinigameColor getColor(ConfigurationSection section){
 		Integer red = section.getInt("red", -1);
 		Integer green = section.getInt("green", -1);
 		Integer blue = section.getInt("blue", -1);
@@ -107,9 +107,9 @@ public class ArenaLoader {
 			return null;
 		}
 		if (chatcolor == null){
-			return new JailbreakColor(red, green, blue);
+			return new MinigameColor(red, green, blue);
 		} else {
-			return new JailbreakColor(red, green, blue, ChatColor.valueOf(chatcolor));
+			return new MinigameColor(red, green, blue, ChatColor.valueOf(chatcolor));
 		}
 	}
 	

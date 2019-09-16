@@ -34,12 +34,15 @@ import me.cxom.jailbreak3.arena.Goal.PlayerOnGoalEvent;
 import me.cxom.jailbreak3.arena.JailbreakArena;
 import me.cxom.jailbreak3.arena.JailbreakTeam;
 import me.cxom.jailbreak3.events.custom.JailbreakDeathEvent;
-import me.cxom.jailbreak3.game.lobby.Lobby;
 import me.cxom.jailbreak3.gui.JailbreakGUI;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
-import me.cxom.jailbreak3.player.PlayerProfile;
-import me.cxom.jailbreak3.utils.FireworkUtils;
-import me.cxom.jailbreak3.utils.InventoryUtils;
+import net.punchtree.minigames.arena.Arena;
+import net.punchtree.minigames.game.GameState;
+import net.punchtree.minigames.game.PvpGame;
+import net.punchtree.minigames.lobby.Lobby;
+import net.punchtree.minigames.utility.FireworkUtils;
+import net.punchtree.minigames.utility.player.InventoryUtils;
+import net.punchtree.minigames.utility.player.PlayerProfile;
 
 public class JailbreakGame implements PvpGame, Listener {
 
@@ -74,7 +77,7 @@ public class JailbreakGame implements PvpGame, Listener {
 	
 	public JailbreakGame(JailbreakArena arena){
 		this.arena = arena;
-		this.lobby = new Lobby(this, this::start);
+		this.lobby = new Lobby(this, this::start, Jailbreak.CHAT_PREFIX);
 		this.gui = new JailbreakGUI(this);
 		Bukkit.getServer().getPluginManager().registerEvents(this, Jailbreak.getPlugin());
 	}
@@ -88,9 +91,15 @@ public class JailbreakGame implements PvpGame, Listener {
 	}
 	
 	public int getPlayersNeededToStart() {
-		return arena.getPlayersToStart();
+		return arena.getPlayersNeededToStart();
 	}
 	
+	@Override
+	public Arena getArena() {
+		return arena;
+	}
+	
+	@Override
 	public GameState getGameState(){
 		return gamestate;
 	}

@@ -4,7 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.Listener;
 
-import me.cxom.jailbreak3.arena.region.Area;
+import net.punchtree.minigames.region.Area;
 
 public class Door implements Listener{
 

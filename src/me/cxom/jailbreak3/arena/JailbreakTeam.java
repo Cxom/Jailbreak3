@@ -8,13 +8,13 @@ import org.bukkit.Location;
 import org.bukkit.event.Listener;
 
 import me.cxom.jailbreak3.Jailbreak;
-import me.cxom.jailbreak3.arena.region.Area;
-import me.cxom.jailbreak3.utils.JailbreakColor;
+import net.punchtree.minigames.region.Area;
+import net.punchtree.minigames.utility.color.MinigameColor;
 
 public class JailbreakTeam implements Listener {
 
 	private final String name;
-	private final JailbreakColor color;
+	private final MinigameColor color;
 	
 	private final List<Location> spawns;
 	private final Goal goal;
@@ -24,7 +24,7 @@ public class JailbreakTeam implements Listener {
 	private int members = 0;
 	private int alive = 0;
 	
-	public JailbreakTeam(String name, JailbreakColor color, 
+	public JailbreakTeam(String name, MinigameColor color, 
 							List<Location> spawns, Goal goal, List<Location> jailspawns, Area jails){
 		this.name = name;
 		this.color = color;
@@ -41,7 +41,7 @@ public class JailbreakTeam implements Listener {
 		return name;
 	}
 	
-	public JailbreakColor getColor(){
+	public MinigameColor getColor(){
 		return color;
 	}
 	

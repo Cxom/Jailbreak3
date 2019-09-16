@@ -20,7 +20,7 @@ import me.cxom.jailbreak3.events.custom.JailbreakDeathEventCaller;
 import me.cxom.jailbreak3.game.JailbreakGame;
 import me.cxom.jailbreak3.player.JailbreakMenu;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
-import me.cxom.jailbreak3.player.PlayerProfile;
+import net.punchtree.minigames.utility.player.PlayerProfile;
 
 public class Jailbreak extends JavaPlugin{
 	
