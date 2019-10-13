@@ -1,5 +1,7 @@
 package me.cxom.jailbreak3.game;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -113,10 +115,12 @@ public class JailbreakGame implements PvpGame, Listener {
 	}
 	
 	void start(Set<Player> players){
+		List<Player> playersList = new ArrayList<>(players);
+		Collections.shuffle(playersList);
 		List<JailbreakTeam> teams = arena.getTeams();
 		int numTeams = teams.size();
 		int i = 0;
-		for(Player player : players){
+		for(Player player : playersList){
 			JailbreakTeam team = teams.get(i % numTeams);
 			
 			JailbreakPlayer jp = new JailbreakPlayer(player, team);
@@ -193,6 +197,9 @@ public class JailbreakGame implements PvpGame, Listener {
 	}
 	
 	public void checkForWin(JailbreakTeam team){
+		if (gamestate == GameState.ENDING) {
+			return;
+		}
 		if (team.getAlive() <= 0){
 			updateAliveStatuses();
 		}
@@ -200,6 +207,7 @@ public class JailbreakGame implements PvpGame, Listener {
 			remaining.remove(team);
 		}
 		if (remaining.size() == 1){
+			gamestate = GameState.ENDING;
 			JailbreakTeam winner = remaining.iterator().next(); 
 			for(Map.Entry<JailbreakPlayer, JailbreakTeam> jpjt : players.entrySet()){
 				Player player = jpjt.getKey().getPlayer();
