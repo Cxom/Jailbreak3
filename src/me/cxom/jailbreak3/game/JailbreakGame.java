@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,6 +43,8 @@ import net.punchtree.minigames.arena.Arena;
 import net.punchtree.minigames.game.GameState;
 import net.punchtree.minigames.game.PvpGame;
 import net.punchtree.minigames.lobby.Lobby;
+import net.punchtree.minigames.region.Area;
+import net.punchtree.minigames.region.MultiRegion;
 import net.punchtree.minigames.utility.FireworkUtils;
 import net.punchtree.minigames.utility.player.InventoryUtils;
 import net.punchtree.minigames.utility.player.PlayerProfile;
@@ -49,6 +52,7 @@ import net.punchtree.minigames.utility.player.PlayerProfile;
 public class JailbreakGame implements PvpGame, Listener {
 
 	final JailbreakArena arena;
+	final Area allJails;
 	
 	private Map<JailbreakPlayer, JailbreakTeam> players = new HashMap<>();
 	private Set<JailbreakTeam> remaining = new HashSet<>();
@@ -79,6 +83,7 @@ public class JailbreakGame implements PvpGame, Listener {
 	
 	public JailbreakGame(JailbreakArena arena){
 		this.arena = arena;
+		this.allJails = new MultiRegion(arena.getTeams().stream().map(t -> t.getJails()).collect(Collectors.toList()));
 		this.lobby = new Lobby(this, this::start, Jailbreak.CHAT_PREFIX);
 		this.gui = new JailbreakGUI(this);
 		Bukkit.getServer().getPluginManager().registerEvents(this, Jailbreak.getPlugin());
@@ -188,11 +193,11 @@ public class JailbreakGame implements PvpGame, Listener {
 		for(Map.Entry<JailbreakPlayer, JailbreakTeam> jpjt : players.entrySet()){
 			JailbreakPlayer jplayer = jpjt.getKey();
 			JailbreakTeam jteam = jpjt.getValue();
-			if (!jplayer.isFree() && !jteam.getJails().contains(jplayer.getPlayer().getLocation())){
+			if (!jplayer.isFree() && !allJails.contains(jplayer.getPlayer().getLocation())){
 				jplayer.setFree(true);
 				players.get(jplayer).incrementAlive();
 				gui.update();
-			} else if (jplayer.isFree() && jteam.getJails().contains(jplayer.getPlayer().getLocation())) {
+			} else if (jplayer.isFree() && allJails.contains(jplayer.getPlayer().getLocation())) {
 				jplayer.setFree(false);
 				players.get(jplayer).decrementAlive();
 				gui.update();
