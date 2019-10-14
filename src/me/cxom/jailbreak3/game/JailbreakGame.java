@@ -192,19 +192,24 @@ public class JailbreakGame implements PvpGame, Listener {
 				jplayer.setFree(true);
 				players.get(jplayer).incrementAlive();
 				gui.update();
+			} else if (jplayer.isFree() && jteam.getJails().contains(jplayer.getPlayer().getLocation())) {
+				jplayer.setFree(false);
+				players.get(jplayer).decrementAlive();
+				gui.update();
+				checkForWin(jteam);
 			}
 		}
 	}
 	
 	public void checkForWin(JailbreakTeam team){
-		if (gamestate == GameState.ENDING) {
-			return;
-		}
 		if (team.getAlive() <= 0){
 			updateAliveStatuses();
 		}
 		if (team.getAlive() <= 0){
 			remaining.remove(team);
+		}
+		if (gamestate == GameState.ENDING) {
+			return;
 		}
 		if (remaining.size() == 1){
 			gamestate = GameState.ENDING;
