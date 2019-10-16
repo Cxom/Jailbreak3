@@ -1,5 +1,6 @@
 package me.cxom.jailbreak3;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -13,13 +14,14 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.cxom.jailbreak3.arena.JailbreakArena;
-import me.cxom.jailbreak3.arena.config.ArenaManager;
+import me.cxom.jailbreak3.arena.config.JailbreakArenaLoader;
 import me.cxom.jailbreak3.events.CancelledEvents;
 import me.cxom.jailbreak3.events.CommandEvents;
 import me.cxom.jailbreak3.events.custom.JailbreakDeathEventCaller;
 import me.cxom.jailbreak3.game.JailbreakGame;
 import me.cxom.jailbreak3.player.JailbreakMenu;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
+import net.punchtree.minigames.arena.creation.ArenaManager;
 import net.punchtree.minigames.utility.player.PlayerProfile;
 
 public class Jailbreak extends JavaPlugin{
@@ -41,8 +43,10 @@ public class Jailbreak extends JavaPlugin{
 		Bukkit.getServer().getPluginManager().registerEvents(new JailbreakDeathEventCaller(), getPlugin());
 		Bukkit.getServer().getPluginManager().registerEvents(new JailbreakMenu(), getPlugin());
 		//register events
-		ArenaManager.loadArenas();
-		for(JailbreakArena arena : ArenaManager.getArenas()){
+		
+		ArenaManager<JailbreakArena> arenaManager = new ArenaManager<>(new File(getDataFolder().getAbsolutePath() + File.separator + "Arenas"), JailbreakArenaLoader::load);
+		arenaManager.loadArenas();
+		for(JailbreakArena arena : arenaManager.getArenas()){
 			games.put(arena.getName(), new JailbreakGame(arena));
 		}
 	}
