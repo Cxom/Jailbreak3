@@ -6,8 +6,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import me.cxom.jailbreak3.arena.JailbreakTeam;
+import net.punchtree.minigames.utility.color.ColoredPlayer;
+import net.punchtree.minigames.utility.color.MinigameColor;
 
-public class JailbreakPlayer {
+public class JailbreakPlayer implements ColoredPlayer {
 
 	private final UUID uuid;
 	
@@ -37,6 +39,11 @@ public class JailbreakPlayer {
 	
 	public void setFree(boolean free){
 		this.free = free;
+	}
+
+	@Override
+	public MinigameColor getColor() {
+		return team.getColor();
 	}
 	
 }
