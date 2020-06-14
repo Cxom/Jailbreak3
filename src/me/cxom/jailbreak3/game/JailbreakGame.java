@@ -21,7 +21,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -42,6 +46,7 @@ import me.cxom.jailbreak3.player.JailbreakPlayer;
 import net.punchtree.minigames.arena.Arena;
 import net.punchtree.minigames.game.GameState;
 import net.punchtree.minigames.game.PvpGame;
+import net.punchtree.minigames.game.pvp.AttackMethod;
 import net.punchtree.minigames.lobby.Lobby;
 import net.punchtree.minigames.region.Area;
 import net.punchtree.minigames.region.MultiRegion;
@@ -137,7 +142,7 @@ public class JailbreakGame implements PvpGame, Listener {
 			player.teleport(team.getSpawns().get(i % team.getSpawns().size()));
 			player.setInvulnerable(false);
 			player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1.1f);
-			gui.addPlayer(player);
+			gui.addPlayer(jp);
 			player.getInventory().clear();
 			InventoryUtils.equipPlayer(player, team.getColor());
 			movement.addPlayer(player);
@@ -176,7 +181,7 @@ public class JailbreakGame implements PvpGame, Listener {
 					team.decrementAlive();
 				}
 				
-				gui.removePlayer(player);
+				gui.removePlayer(jp);
 				gui.update();
 				
 				checkForWin(team);
@@ -212,6 +217,9 @@ public class JailbreakGame implements PvpGame, Listener {
 		}
 		if (team.getAlive() <= 0){
 			remaining.remove(team);
+		}
+		if (team.getAlive() == 1) {
+			gui.playLastMemberAlive(players.keySet().stream().filter(player -> player.getTeam() == team && player.isFree()).findFirst().get());
 		}
 		if (gamestate == GameState.ENDING) {
 			return;
@@ -347,7 +355,7 @@ public class JailbreakGame implements PvpGame, Listener {
 			gui.update();
 			checkForWin(team);
 		}
-	}	
+	}
 	
 	@EventHandler
 	public void onPlayerLeaveGame(PlayerCommandPreprocessEvent e){
