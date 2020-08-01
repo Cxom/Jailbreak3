@@ -56,8 +56,8 @@ public class JailbreakArenaLoader extends ArenaLoader {
 		World world = getRootWorld(section);
 		if (world == null) return null;
 		
-		List<Location> spawns = JailbreakArenaLoader.getList(section.getConfigurationSection("spawns"),
-				(ConfigurationSection spawn) -> { return JailbreakArenaLoader.getLocation(spawn, world); });
+		List<Location> spawns = getList(section.getConfigurationSection("spawns"),
+				(ConfigurationSection spawn) -> getLocation(spawn, world));
 		if (spawns.isEmpty()) return null;
 
 		Location goalL = getLocation(section.getConfigurationSection("goal.location"), world);
@@ -68,8 +68,8 @@ public class JailbreakArenaLoader extends ArenaLoader {
 		Door door = new Door(new MultiRegion(doorRegions));
 		Goal goal = new Goal(goalL, radius, door);
 		
-		List<Location> jailspawns = JailbreakArenaLoader.getList(section.getConfigurationSection("jailspawns"),
-				(ConfigurationSection spawn) -> { return JailbreakArenaLoader.getLocation(spawn, world); });
+		List<Location> jailspawns = getList(section.getConfigurationSection("jailspawns"),
+				(ConfigurationSection spawn) -> { return getLocation(spawn, world); });
 		if (jailspawns.isEmpty()) return null;
 		
 		List<Region> jailRegions = getRegionList(section.getConfigurationSection("jails"));
