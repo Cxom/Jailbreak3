@@ -9,6 +9,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 
 import me.cxom.jailbreak3.Jailbreak;
 
@@ -27,6 +29,13 @@ public class CancelledEvents implements Listener{
 		DamageCause cause = e.getCause();
 		return cause == DamageCause.FALL
 			|| cause == DamageCause.ENTITY_EXPLOSION;
+	}
+	
+	@EventHandler
+	public void onPlayerOpenInventoryEvent(InventoryOpenEvent e) {
+		if (e.getInventory().getType() != InventoryType.PLAYER && Jailbreak.isPlayer(e.getPlayer().getUniqueId())) {			
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler
