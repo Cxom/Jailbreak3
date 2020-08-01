@@ -15,7 +15,7 @@ public class JailbreakDeathEventCaller implements Listener {
 	public void onJailbreakDeath(EntityDamageEvent e){
 		if (! (Jailbreak.isPlayer(e.getEntity().getUniqueId()))) return;
 		Player player = (Player) e.getEntity();
-		if (e.getCause() == DamageCause.FALL) return;
+		if (e.getCause() == DamageCause.FALL || e.getCause() == DamageCause.FLY_INTO_WALL || e.getCause() == DamageCause.ENTITY_EXPLOSION) return;
 		if (e.getFinalDamage() < player.getHealth()) return;
 		Bukkit.getServer().getPluginManager().callEvent(new JailbreakDeathEvent(Jailbreak.getPlayer(player), e));
 	}
