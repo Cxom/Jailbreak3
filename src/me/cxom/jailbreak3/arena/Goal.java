@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import me.cxom.jailbreak3.Jailbreak;
 import me.cxom.jailbreak3.events.custom.JailbreakDeathEvent;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
+import net.punchtree.minigames.arena.Door;
 
 public class Goal implements Listener{
 

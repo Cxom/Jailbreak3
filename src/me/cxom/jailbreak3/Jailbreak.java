@@ -53,9 +53,7 @@ public class Jailbreak extends JavaPlugin{
 	
 	@Override
 	public void onDisable(){
-		for (JailbreakGame game : games.values()){
-			game.forceStop();
-		}
+		games.values().forEach(JailbreakGame::interruptAndShutdown);
 		PlayerProfile.restoreAll(); // this should be redundant (forcestop should restore all inventories)
 		//deal with arena files (creation/modification saving)
 	}

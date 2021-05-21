@@ -3,17 +3,30 @@ package me.cxom.jailbreak3.gui;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
+import me.cxom.jailbreak3.game.JailbreakGame;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
 
 public class JailbreakTabList /* implements RabbitGameObserver */ {
-
+	
 	private Set<Player> players = new HashSet<>();
+	
+	private final Scoreboard scoreboard;
+	private Objective playerlist;
+	
+	public JailbreakTabList(Scoreboard scoreboard, String title) {
+		this.scoreboard = scoreboard;
+		playerlist = scoreboard.registerNewObjective("playerlist", "dummy", title);
+		playerlist.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+	}
 	
 	public void addPlayer(JailbreakPlayer jailbreakPlayer) {
 		Player player = jailbreakPlayer.getPlayer();
+		player.setScoreboard(scoreboard);
 		players.add(player);
 		updatePlayer(jailbreakPlayer);
 	}
@@ -21,6 +34,10 @@ public class JailbreakTabList /* implements RabbitGameObserver */ {
 	public void updatePlayer(JailbreakPlayer jailbreakPlayer) {
 		Player player = jailbreakPlayer.getPlayer();
 		player.setPlayerListName(jailbreakPlayer.getColor().getChatColor() + player.getName()); // + " " + ChatColor.GRAY + jailbreakPlayer.getKills());
+	}
+
+	public void updateTabList(JailbreakGame game) {
+
 	}
 	
 	public void removePlayer(Player player) {

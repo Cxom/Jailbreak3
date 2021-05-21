@@ -1,5 +1,6 @@
 package me.cxom.jailbreak3.events;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,10 +26,12 @@ public class CancelledEvents implements Listener{
 		}
 	}
 	
-	private boolean isProtectedDamageCause(EntityDamageEvent e) {
+	public static boolean isProtectedDamageCause(EntityDamageEvent e) {
 		DamageCause cause = e.getCause();
 		return cause == DamageCause.FALL
-			|| cause == DamageCause.ENTITY_EXPLOSION;
+			|| cause == DamageCause.ENTITY_EXPLOSION
+			|| cause == DamageCause.FLY_INTO_WALL
+			|| (cause == DamageCause.SUFFOCATION && e.getEntity() instanceof Player && ((Player) e.getEntity()).getEyeLocation().getBlock().getType() != Material.WATER);
 	}
 	
 	@EventHandler
