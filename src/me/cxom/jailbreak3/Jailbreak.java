@@ -19,9 +19,9 @@ import me.cxom.jailbreak3.events.CancelledEvents;
 import me.cxom.jailbreak3.events.CommandEvents;
 import me.cxom.jailbreak3.events.custom.JailbreakDeathEventCaller;
 import me.cxom.jailbreak3.game.JailbreakGame;
-import me.cxom.jailbreak3.player.JailbreakMenu;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
 import net.punchtree.minigames.arena.creation.ArenaManager;
+import net.punchtree.minigames.game.GameManager;
 import net.punchtree.minigames.utility.player.PlayerProfile;
 
 public class Jailbreak extends JavaPlugin{
@@ -31,49 +31,69 @@ public class Jailbreak extends JavaPlugin{
 	private static Plugin plugin;
 	public static Plugin getPlugin(){ return plugin; }
 	
-	private static Map<UUID, JailbreakPlayer> players = new HashMap<>();
+	private File jailbreakArenaFolder;
 	
-	private static Map<String, JailbreakGame> games = new HashMap<>();
+	private ArenaManager<JailbreakArena> jailbreakArenaManager;
+	
+	private GameManager<JailbreakGame> jailbreakGameManager;
+	
+	private static Map<UUID, JailbreakPlayer> players = new HashMap<>();
 	
 	@Override
 	public void onEnable(){
 		plugin = this;
+		
+		jailbreakArenaFolder = new File(getDataFolder().getAbsolutePath() + File.separator + "Arenas");
+		jailbreakArenaManager = new ArenaManager<>(jailbreakArenaFolder, JailbreakArenaLoader::load);
+		jailbreakGameManager = new GameManager<>(CHAT_PREFIX + "Games");
+		
+		registerEvents();
+		
+		createAllGames();
+	}
+	
+	private void registerEvents() {
 		Bukkit.getServer().getPluginManager().registerEvents(new CancelledEvents(), getPlugin());
 		Bukkit.getServer().getPluginManager().registerEvents(new CommandEvents(), getPlugin());
 		Bukkit.getServer().getPluginManager().registerEvents(new JailbreakDeathEventCaller(), getPlugin());
-		Bukkit.getServer().getPluginManager().registerEvents(new JailbreakMenu(), getPlugin());
-		//register events
-		
-		ArenaManager<JailbreakArena> arenaManager = new ArenaManager<>(new File(getDataFolder().getAbsolutePath() + File.separator + "Arenas"), JailbreakArenaLoader::load);
-		arenaManager.loadArenas();
-		for(JailbreakArena arena : arenaManager.getArenas()){
-			games.put(arena.getName(), new JailbreakGame(arena));
-		}
+	}
+	
+	private void createAllGames() {
+		jailbreakArenaManager.loadArenas();
+		jailbreakArenaManager.getArenas().forEach(jailbreakArena -> {
+			JailbreakGame game = new JailbreakGame(jailbreakArena);
+			jailbreakGameManager.addGame(jailbreakArena.getName(), game, game.getLobby());
+		});
 	}
 	
 	@Override
 	public void onDisable(){
-		games.values().forEach(JailbreakGame::interruptAndShutdown);
+		jailbreakGameManager.stopAllGames();
+		// TODO figure out why we put this here
 		PlayerProfile.restoreAll(); // this should be redundant (forcestop should restore all inventories)
-		//deal with arena files (creation/modification saving)
 	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
 		
+		if (! (sender instanceof Player)) return true;
+		Player player = (Player) sender;
+		
 		if (args.length == 0){
-			if (! (sender instanceof Player)) return true;
-			if (PlayerProfile.isSaved((Player) sender)) return true;
-			((Player) sender).openInventory(JailbreakMenu.getMenu());
+			if (PlayerProfile.isSaved(player)) {
+				getLogger().severe(player.getName() + " tried to join a game but has a saved inventory!");
+				return true;
+			}
+			
+			jailbreakGameManager.showMenuTo(player);
+			
 			return true;
 		} else if (args.length >= 2 && args[0].equalsIgnoreCase("join")){
-			if (! (sender instanceof Player)) return true;
-			Player player = (Player) sender;
-			if (! games.containsKey(args[1])){
+			if (! jailbreakGameManager.hasGame(args[1])){
 				player.sendMessage(Jailbreak.CHAT_PREFIX + ChatColor.RED + " There is no game/arena named " + args[1] + "!");
 				return true;
 			} else {
-				games.get(args[1]).getLobby().addPlayerIfPossible(player);
+				jailbreakGameManager.addPlayerToGameLobby(args[1], player);
 				return true;
 			}
 		}
@@ -99,14 +119,6 @@ public class Jailbreak extends JavaPlugin{
 	public static void removePlayer(Player player){ removePlayer(player.getUniqueId()); }
 	public static void removePlayer(UUID uuid){
 		players.remove(uuid);
-	}
-	
-	public static JailbreakGame getGame(String name){
-		return games.get(name);
-	}
-
-	public static Map<String, JailbreakGame> getGameMap(){
-		return games;
 	}
 	
 }

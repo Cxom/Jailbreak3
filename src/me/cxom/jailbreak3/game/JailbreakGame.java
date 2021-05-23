@@ -93,7 +93,7 @@ public class JailbreakGame implements PvpGame, Listener {
 	}
 	
 	public String getName() {
-		return arena.getName();
+		return "Jailbreak";
 	}
 	
 	public Location getPregameLobbySpawn() {
