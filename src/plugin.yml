@@ -7,4 +7,4 @@ depend: [PunchTree-Minigames, MovementPlusPlus]
 
 commands:
   jailbreak:
-    aliases: jb
+    aliases: [jb]
