@@ -1,5 +1,6 @@
 package me.cxom.jailbreak3.arena.config;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,15 +29,27 @@ public class JailbreakArenaLoader extends ArenaLoader {
 	public static JailbreakArena load(FileConfiguration arenacfg){
 		String name = arenacfg.getString("name");
 		
+		World world = getRootWorld(arenacfg);
+		Location relative = new Location(world, 0, 0, 0);
+		
+		boolean isRelative = arenacfg.isConfigurationSection("relative");
+		if (isRelative){
+			relative = getLocation(arenacfg.getConfigurationSection("relative"));
+		}
+		
+		final Location finalRelative = relative;
+		
 		List<JailbreakTeam> teams = getList(arenacfg.getConfigurationSection("teams"),
-											JailbreakArenaLoader::getTeam);
+											configSec -> JailbreakArenaLoader.getTeam(configSec, finalRelative));
+		
+		
 		//^^ Make sure no duplicate names can be saved when creating teams
 		teams.removeAll(Collections.singleton(null));
 		if (teams.size() < 2) return null;
 		
 		Location pregameLobby;
 		if (arenacfg.isConfigurationSection("lobby")){
-			pregameLobby = getLocation(arenacfg.getConfigurationSection("lobby"));
+			pregameLobby = getRelativeLocation(arenacfg.getConfigurationSection("lobby"), relative);
 		} else {
 			pregameLobby = teams.get(0).getSpawns().get(0);
 		}
@@ -46,7 +59,7 @@ public class JailbreakArenaLoader extends ArenaLoader {
 		return new JailbreakArena(name, pregameLobby, playersToStart, teams);
 	};
 	
-	public static JailbreakTeam getTeam(ConfigurationSection section){
+	public static JailbreakTeam getTeam(ConfigurationSection section, Location relative){
 		String name = section.getString("name");
 
 		PunchTreeColor color = getColor(section.getConfigurationSection("color"));
@@ -60,14 +73,13 @@ public class JailbreakArenaLoader extends ArenaLoader {
 		World world = getRootWorld(section);
 		if (world == null) return null;
 		
-		List<Location> spawns = getList(section.getConfigurationSection("spawns"),
-				(ConfigurationSection spawn) -> getLocation(spawn, world));
+		List<Location> spawns = Arrays.asList(getRelativeLocationList(section.getConfigurationSection("spawns"), relative));
 		if (spawns.isEmpty()) return null;
 
-		Location goalL = getLocation(section.getConfigurationSection("goal.location"), world);
+		Location goalL = getRelativeLocation(section.getConfigurationSection("goal.location"), relative);
 		if (goalL == null) return null;
 		Double radius = section.getDouble("goal.radius", 2.5);
-		List<Region> doorRegions = getRegionList(section.getConfigurationSection("doors"));
+		List<Region> doorRegions = getRelativeRegionList(section.getConfigurationSection("doors"), relative);
 		if (doorRegions.isEmpty()) return null;
 		String doorMaterialStr = section.getString("doormaterial");
 		Material doorMaterial = DEFAULT_DOOR_MATERIAL;
@@ -81,11 +93,10 @@ public class JailbreakArenaLoader extends ArenaLoader {
 		Door door = new Door(new MultiRegion(doorRegions), doorMaterial);
 		Goal goal = new Goal(goalL, radius, door);
 		
-		List<Location> jailspawns = getList(section.getConfigurationSection("jailspawns"),
-				(ConfigurationSection spawn) -> { return getLocation(spawn, world); });
+		List<Location> jailspawns = Arrays.asList(getRelativeLocationList(section.getConfigurationSection("jailspawns"), relative));
 		if (jailspawns.isEmpty()) return null;
 		
-		List<Region> jailRegions = getRegionList(section.getConfigurationSection("jails"));
+		List<Region> jailRegions = getRelativeRegionList(section.getConfigurationSection("jails"), relative);
 		if (jailRegions.isEmpty()) return null;
 		Area jails = new MultiRegion(jailRegions);
 		
