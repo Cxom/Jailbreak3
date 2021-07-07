@@ -7,8 +7,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,6 +37,8 @@ public class Jailbreak extends JavaPlugin{
 	
 	private static Map<UUID, JailbreakPlayer> players = new HashMap<>();
 	
+	private JailbreakCommandExecutor commandExecutor;
+	
 	@Override
 	public void onEnable(){
 		plugin = this;
@@ -50,6 +50,9 @@ public class Jailbreak extends JavaPlugin{
 		registerEvents();
 		
 		createAllGames();
+		
+		commandExecutor = new JailbreakCommandExecutor(jailbreakGameManager, getLogger());
+		getCommand("jailbreak").setExecutor(commandExecutor);
 	}
 	
 	private void registerEvents() {
@@ -71,34 +74,6 @@ public class Jailbreak extends JavaPlugin{
 		jailbreakGameManager.stopAllGames();
 		// TODO figure out why we put this here
 		PlayerProfile.restoreAll(); // this should be redundant (forcestop should restore all inventories)
-	}
-	
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-		
-		if (! (sender instanceof Player)) return true;
-		Player player = (Player) sender;
-		
-		if (args.length == 0){
-			if (PlayerProfile.isSaved(player)) {
-				getLogger().severe(player.getName() + " tried to join a game but has a saved inventory!");
-				return true;
-			}
-			
-			jailbreakGameManager.showMenuTo(player);
-			
-			return true;
-		} else if (args.length >= 2 && args[0].equalsIgnoreCase("join")){
-			if (! jailbreakGameManager.hasGame(args[1])){
-				player.sendMessage(Jailbreak.CHAT_PREFIX + ChatColor.RED + " There is no game/arena named " + args[1] + "!");
-				return true;
-			} else {
-				jailbreakGameManager.addPlayerToGameLobby(args[1], player);
-				return true;
-			}
-		}
-		
-		return true;
 	}
 	
 	public static boolean isPlayer(Player player){ return isPlayer(player.getUniqueId()); }
