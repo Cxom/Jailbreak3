@@ -368,7 +368,7 @@ public class JailbreakGame implements PvpGame, Listener {
 	
 	@EventHandler
 	public void onPlayerLeaveGame(PlayerCommandPreprocessEvent e){
-		if (e.getMessage().equalsIgnoreCase("/jailbreak leave") && hasPlayer(e.getPlayer())){
+		if (e.getMessage().equalsIgnoreCase("/leave") && hasPlayer(e.getPlayer())){
 			removePlayer(e.getPlayer());
 		}
 	}

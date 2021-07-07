@@ -17,14 +17,14 @@ public class CommandEvents implements Listener{
 
 	List<String> cmds = new ArrayList<String>(Arrays.asList(new String[] {
 			"/m", "/msg", "/message", "/t", "/tell", "/w", "/whisper", "/r",
-			"/reply", "/ac", "/helpop"}));
+			"/reply", "/ac", "/helpop", "/leave"}));
 
 	@EventHandler
 	public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent e) {
 		Player player = e.getPlayer();
 		String command = e.getMessage().toLowerCase() + " ";
 		if (PlayerProfile.isSaved(player) && !player.isOp()){
-			if (cmds.contains(command.split(" ")[0]) || (command.startsWith("jailbreak leave"))) {
+			if (cmds.contains(command.split(" ")[0])) {
 				return;
 			}else{
 				e.setCancelled(true);
