@@ -3,7 +3,6 @@ package me.cxom.jailbreak3.gui;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -72,9 +71,9 @@ public class JailbreakGUI {
 		for (JailbreakTeam team : game.getRemainingTeams()){
 			bar += team.getGoal().getDoor().isOpen() ? team.getChatColor() + "<OPEN>" : ChatColor.GRAY + "<>";
 			bar += " " + team.getChatColor() + team.getName() + " ";
-			bar += StringUtils.repeat("█", team.getAlive());
+			bar += "█".repeat(team.getAlive());
 			bar += ChatColor.GRAY;
-			bar += StringUtils.repeat("█", team.getSize() - team.getAlive());
+			bar += "█".repeat(team.getSize() - team.getAlive());
 			bar += ChatColor.WHITE + " | ";
 			
 			actionbar += ChatColor.UNDERLINE;

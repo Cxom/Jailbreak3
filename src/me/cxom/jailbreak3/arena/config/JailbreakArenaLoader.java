@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -65,7 +64,8 @@ public class JailbreakArenaLoader extends ArenaLoader {
 		PunchTreeColor color = getColor(section.getConfigurationSection("color"));
 		if (name == null && color == null) return null;
 		if (name == null){
-			name = StringUtils.capitalize(color.getChatColor().name());
+			String chatColorName = color.getChatColor().name().replace('_', ' ');
+			name = chatColorName.substring(0, 1).toUpperCase() + chatColorName.substring(1).toLowerCase();
 		} else if (color == null){
 			color = PunchTreeColor.valueOf(name); //Defaults to white
 		}

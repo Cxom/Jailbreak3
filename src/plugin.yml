@@ -1,7 +1,7 @@
 name: Jailbreak3
 main: me.cxom.jailbreak3.Jailbreak
-version: 1.3.1
-api-version: 1.16
+version: 1.4
+api-version: 1.19
 description: Rendition 3 of the Minecraft minigame Jailbreak
 depend: [PunchTree-Minigames, MovementPlusPlus]
 

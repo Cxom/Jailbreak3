@@ -10,6 +10,7 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import me.cxom.jailbreak3.game.JailbreakGame;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
+import net.kyori.adventure.text.Component;
 
 public class JailbreakTabList /* implements RabbitGameObserver */ {
 	
@@ -34,10 +35,8 @@ public class JailbreakTabList /* implements RabbitGameObserver */ {
 	public void updatePlayer(JailbreakPlayer jailbreakPlayer) {
 		Player player = jailbreakPlayer.getPlayer();
 		player.setPlayerListName(jailbreakPlayer.getColor().getChatColor() + player.getName()); // + " " + ChatColor.GRAY + jailbreakPlayer.getKills());
-	}
-
-	public void updateTabList(JailbreakGame game) {
-
+		String teamString = jailbreakPlayer.getColor() + jailbreakPlayer.getTeam().getName();
+		player.sendPlayerListHeaderAndFooter(Component.text(teamString), Component.text(teamString));
 	}
 	
 	public void removePlayer(Player player) {
@@ -55,6 +54,7 @@ public class JailbreakTabList /* implements RabbitGameObserver */ {
 	 */
 	private void resetPlayerListName(Player player) {
 		player.setPlayerListName(player.getName());
+		player.setPlayerListHeaderFooter("", "");
 	}
 	
 //	@Override
