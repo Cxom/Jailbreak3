@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -45,12 +46,10 @@ import net.punchtree.minigames.arena.Arena;
 import net.punchtree.minigames.game.GameState;
 import net.punchtree.minigames.game.PvpGame;
 import net.punchtree.minigames.game.pvp.AttackMethod;
-import net.punchtree.minigames.lobby.Lobby;
 import net.punchtree.minigames.region.Area;
 import net.punchtree.minigames.region.MultiRegion;
 import net.punchtree.minigames.utility.FireworkUtils;
 import net.punchtree.minigames.utility.player.InventoryUtils;
-import net.punchtree.minigames.utility.player.PlayerProfile;
 
 public class JailbreakGame implements PvpGame, Listener {
 
@@ -61,18 +60,12 @@ public class JailbreakGame implements PvpGame, Listener {
 	private Set<JailbreakTeam> remaining = new HashSet<>();
 	
 	GameState gamestate = GameState.WAITING;
-	
+
 	private MovementSystem movement = MovementPlusPlus.CXOMS_MOVEMENT;
-	
+
+	private Consumer<Player> onPlayerLeaveGame;
+
 	private BukkitTask free;
-	
-	///////////////////////////////////////////////////////////////
-	
-	private Lobby lobby;
-	
-	public Lobby getLobby(){
-		return lobby;
-	}
 	
 	///////////////////////////////////////////////////////////////
 	
@@ -87,7 +80,6 @@ public class JailbreakGame implements PvpGame, Listener {
 	public JailbreakGame(JailbreakArena arena){
 		this.arena = arena;
 		this.allJails = new MultiRegion(arena.getTeams().stream().map(t -> t.getJails()).collect(Collectors.toList()));
-		this.lobby = new Lobby(this, this::start, Jailbreak.CHAT_PREFIX);
 		this.gui = new JailbreakGUI(this);
 		Bukkit.getServer().getPluginManager().registerEvents(this, Jailbreak.getPlugin());
 	}
@@ -121,8 +113,11 @@ public class JailbreakGame implements PvpGame, Listener {
 	public boolean isInJail(Location location) {
 		return allJails.contains(location);
 	}
-	
-	void start(Set<Player> players){
+
+	@Override
+	public void startGame(Set<Player> players, Consumer<Player> onPlayerLeaveGame){
+		this.onPlayerLeaveGame = onPlayerLeaveGame;
+
 		List<Player> playersList = new ArrayList<>(players);
 		Collections.shuffle(playersList);
 		List<JailbreakTeam> teams = arena.getTeams();
@@ -219,10 +214,8 @@ public class JailbreakGame implements PvpGame, Listener {
 				}
 				
 				Jailbreak.removePlayer(player);
-				PlayerProfile.restore(player);
+				onPlayerLeaveGame.accept(player);
 			}
-		} else {
-			lobby.removeAndRestorePlayer(player);
 		}
 	}
 	
@@ -267,9 +260,9 @@ public class JailbreakGame implements PvpGame, Listener {
 			free = null;
 		}	
 		for(JailbreakPlayer jp : players){
-			PlayerProfile.restore(jp.getPlayer());
 			Jailbreak.removePlayer(jp.getPlayer());
 			movement.removePlayer(jp.getPlayer());
+			onPlayerLeaveGame.accept(jp.getPlayer());
 		}
 		gui.removeAll();
 		players.clear();
@@ -368,7 +361,7 @@ public class JailbreakGame implements PvpGame, Listener {
 	
 	@EventHandler
 	public void onPlayerLeaveGame(PlayerCommandPreprocessEvent e){
-		if (e.getMessage().equalsIgnoreCase("/leave") && (hasPlayer(e.getPlayer()) || lobby.hasPlayer(e.getPlayer()))){
+		if (e.getMessage().equalsIgnoreCase("/leave") && hasPlayer(e.getPlayer())){
 			removePlayer(e.getPlayer());
 		}
 	}
@@ -388,7 +381,6 @@ public class JailbreakGame implements PvpGame, Listener {
 	
 	public void interruptAndShutdown(){
 		end();
-		lobby.removeAndRestoreAll();
 		gamestate = GameState.STOPPED;
 	}
 	

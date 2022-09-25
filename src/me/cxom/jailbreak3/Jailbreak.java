@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import net.punchtree.minigames.lobby.PerMapLegacyLobby;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -65,7 +66,7 @@ public class Jailbreak extends JavaPlugin{
 		jailbreakArenaManager.loadArenas();
 		jailbreakArenaManager.getArenas().forEach(jailbreakArena -> {
 			JailbreakGame game = new JailbreakGame(jailbreakArena);
-			jailbreakGameManager.addGame(jailbreakArena.getName(), game, game.getLobby());
+			jailbreakGameManager.addGame(jailbreakArena.getName(), game, new PerMapLegacyLobby(game, PlayerProfile::restore, Jailbreak.CHAT_PREFIX));
 		});
 	}
 	
