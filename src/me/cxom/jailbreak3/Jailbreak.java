@@ -5,11 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import net.punchtree.minigames.lobby.PerMapLegacyLobby;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.cxom.jailbreak3.arena.JailbreakArena;
@@ -21,14 +19,15 @@ import me.cxom.jailbreak3.game.JailbreakGame;
 import me.cxom.jailbreak3.player.JailbreakPlayer;
 import net.punchtree.minigames.arena.creation.ArenaManager;
 import net.punchtree.minigames.game.GameManager;
+import net.punchtree.minigames.lobby.PerMapLegacyLobby;
 import net.punchtree.minigames.utility.player.PlayerProfile;
 
 public class Jailbreak extends JavaPlugin{
 	
 	public static final String CHAT_PREFIX = ChatColor.BLUE + "[" + ChatColor.WHITE + "Jailbreak" + ChatColor.BLUE + "]" + ChatColor.RESET + " ";
 	
-	private static Plugin plugin;
-	public static Plugin getPlugin(){ return plugin; }
+	private static Jailbreak plugin;
+	public static Jailbreak getPlugin(){ return plugin; }
 	
 	private File jailbreakArenaFolder;
 	
@@ -75,6 +74,10 @@ public class Jailbreak extends JavaPlugin{
 		jailbreakGameManager.stopAllGames();
 		// TODO figure out why we put this here
 		PlayerProfile.restoreAll(); // this should be redundant (forcestop should restore all inventories)
+	}
+	
+	public GameManager<JailbreakGame> getJailbreakGameManager() {
+		return jailbreakGameManager;
 	}
 	
 	public static boolean isPlayer(Player player){ return isPlayer(player.getUniqueId()); }
