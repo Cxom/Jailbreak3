@@ -2,12 +2,15 @@ package me.cxom.jailbreak3;
 
 import java.util.logging.Logger;
 
+import me.cxom.jailbreak3.arena.JailbreakArena;
+import net.punchtree.minigames.arena.creation.ArenaManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.cxom.jailbreak3.arena.config.JArenaManager;
 import me.cxom.jailbreak3.game.JailbreakGame;
 import net.punchtree.minigames.game.GameManager;
 import net.punchtree.minigames.utility.player.PlayerProfile;
@@ -16,10 +19,14 @@ public class JailbreakCommandExecutor implements CommandExecutor {
 
 	private final GameManager<JailbreakGame> jailbreakGameManager;
 	private final Logger logger;
-	
-	public JailbreakCommandExecutor(GameManager<JailbreakGame> jailbreakGameManager, Logger logger) {
+	private final JailbreakRegionIllustrator regionIllustrator;
+	private final ArenaManager<JailbreakArena> arenaManager;
+
+	public JailbreakCommandExecutor(GameManager<JailbreakGame> jailbreakGameManager, Logger logger, JailbreakRegionIllustrator regionIllustrator, ArenaManager<JailbreakArena> arenaManager) {
 		this.jailbreakGameManager = jailbreakGameManager;
 		this.logger = logger;
+		this.regionIllustrator = regionIllustrator;
+		this.arenaManager = arenaManager;
 	}
 
 	@Override
@@ -36,6 +43,13 @@ public class JailbreakCommandExecutor implements CommandExecutor {
 			
 			jailbreakGameManager.showMenuTo(player);
 			
+			return true;
+		} else if (args.length >= 2 && args[0].equalsIgnoreCase("showjails") && player.isOp()) {
+			if (! arenaManager.isArena(args[1])){
+				player.sendMessage(Jailbreak.CHAT_PREFIX + ChatColor.RED + " There is no game/arena named " + args[1] + "!");
+			} else {
+				regionIllustrator.illustrateRegion(player, arenaManager.getArena(args[1]));
+			}
 			return true;
 		} else if (args.length >= 2 && args[0].equalsIgnoreCase("join")){
 			if (! jailbreakGameManager.hasGame(args[1])){

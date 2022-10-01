@@ -39,6 +39,8 @@ public class Jailbreak extends JavaPlugin{
 	
 	private JailbreakCommandExecutor commandExecutor;
 	
+	private JailbreakRegionIllustrator regionIllustrator; 
+	
 	@Override
 	public void onEnable(){
 		plugin = this;
@@ -47,11 +49,13 @@ public class Jailbreak extends JavaPlugin{
 		jailbreakArenaManager = new ArenaManager<>(jailbreakArenaFolder, JailbreakArenaLoader::load);
 		jailbreakGameManager = new GameManager<>(CHAT_PREFIX + "Games");
 		
+		regionIllustrator = new JailbreakRegionIllustrator();
+
 		registerEvents();
 		
 		createAllGames();
-		
-		commandExecutor = new JailbreakCommandExecutor(jailbreakGameManager, getLogger());
+
+		commandExecutor = new JailbreakCommandExecutor(jailbreakGameManager, getLogger(), regionIllustrator, jailbreakArenaManager);
 		getCommand("jailbreak").setExecutor(commandExecutor);
 	}
 	
@@ -59,6 +63,7 @@ public class Jailbreak extends JavaPlugin{
 		Bukkit.getServer().getPluginManager().registerEvents(new CancelledEvents(), getPlugin());
 		Bukkit.getServer().getPluginManager().registerEvents(new CommandEvents(), getPlugin());
 		Bukkit.getServer().getPluginManager().registerEvents(new JailbreakDeathEventCaller(), getPlugin());
+		Bukkit.getServer().getPluginManager().registerEvents(regionIllustrator, plugin);
 	}
 	
 	private void createAllGames() {
