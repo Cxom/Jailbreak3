@@ -77,8 +77,6 @@ public class Jailbreak extends JavaPlugin{
 	@Override
 	public void onDisable(){
 		jailbreakGameManager.stopAllGames();
-		// TODO figure out why we put this here
-		PlayerProfile.restoreAll(); // this should be redundant (forcestop should restore all inventories)
 	}
 	
 	public GameManager<JailbreakGame> getJailbreakGameManager() {
