@@ -35,7 +35,7 @@ public class JailbreakTabList /* implements RabbitGameObserver */ {
 	public void updatePlayer(JailbreakPlayer jailbreakPlayer) {
 		Player player = jailbreakPlayer.getPlayer();
 		player.setPlayerListName(jailbreakPlayer.getColor().getChatColor() + player.getName()); // + " " + ChatColor.GRAY + jailbreakPlayer.getKills());
-		String teamString = jailbreakPlayer.getColor() + jailbreakPlayer.getTeam().getName();
+		String teamString = jailbreakPlayer.getColor().getChatColor() + jailbreakPlayer.getTeam().getName();
 		player.sendPlayerListHeaderAndFooter(Component.text(teamString), Component.text(teamString));
 	}
 	
