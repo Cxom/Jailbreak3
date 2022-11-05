@@ -28,7 +28,7 @@ public class CommandEvents implements Listener{
 				return;
 			}else{
 				e.setCancelled(true);
-				player.sendMessage(Jailbreak.CHAT_PREFIX + ChatColor.RED + "You do not have permission to use non-messaging commands in Jailbreak. If you wish to leave the match, do /jailbreak leave");
+				player.sendMessage(Jailbreak.CHAT_PREFIX + ChatColor.RED + "You do not have permission to use non-messaging commands in Jailbreak. If you wish to leave the match, do /leave");
 			}
 		}
 		
