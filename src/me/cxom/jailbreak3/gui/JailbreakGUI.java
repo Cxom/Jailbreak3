@@ -1,8 +1,10 @@
 package me.cxom.jailbreak3.gui;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import me.cxom.jailbreak3.arena.JailbreakArena;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -30,7 +32,10 @@ public class JailbreakGUI {
 	private final Scoreboard scoreboard;
 	private final Killfeed killfeed;
 	private final JailbreakTabList tablist;
-	
+	private final GUITeamManager teamManager;
+	// TODO this properly
+	JailbreakTeam team1, team2;
+
 	private final Set<Player> players = new HashSet<>();
 	
 	public JailbreakGUI(JailbreakGame game) {
@@ -39,6 +44,10 @@ public class JailbreakGUI {
 		this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 		this.killfeed = new Killfeed(scoreboard, Jailbreak.CHAT_PREFIX);
 		this.tablist = new JailbreakTabList(scoreboard, "Playerlist test");
+		List<JailbreakTeam> teams = ((JailbreakArena) game.getArena()).getTeams();
+		team1 = teams.get(0);
+		team2 = teams.get(1);
+		this.teamManager = new GUITeamManager(game.getArena().getName(), team1, team2);
 	}
 	
 	public void addPlayer(JailbreakPlayer jp){
@@ -48,6 +57,12 @@ public class JailbreakGUI {
 		player.setScoreboard(scoreboard);
 		bossbar.addPlayer(player);
 		tablist.addPlayer(jp);
+
+		if (jp.getTeam().equals(team1)) {
+			teamManager.addPlayerToTeam1(player);
+		} else {
+			teamManager.addPlayerToTeam2(player);
+		}
 	}
 	
 	public void removePlayer(Player player){
@@ -55,6 +70,7 @@ public class JailbreakGUI {
 		players.remove(player);
 		bossbar.removePlayer(player);
 		tablist.removePlayer(player);
+		teamManager.removePlayer(player);
 	}
 	
 	public void removeAll(){
@@ -62,6 +78,7 @@ public class JailbreakGUI {
 		players.clear();
 		bossbar.removeAll();
 		tablist.removeAll();
+		teamManager.removeAll();
 	}
 	
 	public void update(){
@@ -117,5 +134,8 @@ public class JailbreakGUI {
 	public void sendKill(JailbreakPlayer killer, JailbreakPlayer killed, AttackMethod attackMethod) {
 		killfeed.sendKill(killer, killed, attackMethod);
 	}
-	
+
+	public void cleanup() {
+		teamManager.cleanup();
+	}
 }

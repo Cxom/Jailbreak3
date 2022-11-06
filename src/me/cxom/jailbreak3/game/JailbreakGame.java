@@ -405,6 +405,7 @@ public class JailbreakGame implements PvpGame, Listener {
 	public void interruptAndShutdown(){
 		end();
 		gamestate = GameState.STOPPED;
+		gui.cleanup();
 	}
 	
 //	public void allowStart(){
