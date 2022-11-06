@@ -315,8 +315,8 @@ public class JailbreakGame implements PvpGame, Listener {
 	public void onTeamDamage(EntityDamageByEntityEvent e) {
 		Entity damager = e.getDamager();
 		Entity damaged = e.getEntity();
-		if (damager instanceof Projectile projectile) {
-			damager = (Entity) projectile.getShooter();
+		if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Player playerDamager) {
+			damager = playerDamager;
 		}
 		if (Jailbreak.isPlayer(damager.getUniqueId()) && Jailbreak.isPlayer(damaged.getUniqueId())) {
 			JailbreakPlayer damagerPlayer = Jailbreak.getPlayer(damager.getUniqueId());
