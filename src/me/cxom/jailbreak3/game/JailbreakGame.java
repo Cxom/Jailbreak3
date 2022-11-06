@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import net.punchtree.util.debugvar.DebugVars;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -19,6 +20,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -308,7 +310,28 @@ public class JailbreakGame implements PvpGame, Listener {
 			gui.update();
 		}
 	}
-	
+
+	@EventHandler
+	public void onTeamDamage(EntityDamageByEntityEvent e) {
+		Entity damager = e.getDamager();
+		Entity damaged = e.getEntity();
+		if (damager instanceof Projectile projectile) {
+			damager = (Entity) projectile.getShooter();
+		}
+		if (Jailbreak.isPlayer(damager.getUniqueId()) && Jailbreak.isPlayer(damaged.getUniqueId())) {
+			JailbreakPlayer damagerPlayer = Jailbreak.getPlayer(damager.getUniqueId());
+			JailbreakPlayer damagedPlayer = Jailbreak.getPlayer(damaged.getUniqueId());
+			boolean isFriendlyFire = damagerPlayer.getTeam().equals(damagedPlayer.getTeam());
+			boolean isVictimInJail = !damagedPlayer.isFree();
+			boolean isFriendlyFireAllowedInGeneral = DebugVars.getBoolean("jailbreak-friendly-fire", true);
+			boolean isFriendlyFireAllowedInJails = DebugVars.getBoolean("jailbreak-friendly-fire-in-jails", false);
+			boolean isFriendlyFireAllowedInThisScenario = isVictimInJail && isFriendlyFireAllowedInJails || !isVictimInJail && isFriendlyFireAllowedInGeneral;
+			if (isFriendlyFire && !isFriendlyFireAllowedInThisScenario) {
+				e.setCancelled(true);
+			}
+		}
+	}
+
 	@EventHandler
 	public void onJailbreakDeath(JailbreakDeathEvent e){
 		JailbreakPlayer jp = e.getJailbreakPlayer();
